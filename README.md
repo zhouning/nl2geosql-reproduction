@@ -10,7 +10,7 @@
 |---|---|
 | `code/eval/` | Four offline analysis scripts (no LLM API needed) |
 | `code/prompts/` | The five prompt families used in the paper (`gemini`, `gemini-3.5-flash`, `deepseek`, `qwen`, `gemma`) plus shared `domain_facts.md` |
-| `data/benchmark/` | The 125-question CQ-125 benchmark (questions + gold SQL + metadata) and the 40-question robustness split |
+| `data/benchmark/` | The 125-question CQ-125 benchmark (questions + gold SQL + metadata), the 40-question robustness split, and a `schema.sql` structure-only dump of the 11 PostGIS tables referenced by gold SQL (no row data — reproduction does not require a database) |
 | `data/results/` | Frozen `records_baseline.jsonl` and `records_full.jsonl` for every (family × sample) cell — 11 families × N=3 samples × 2 modes = 66 JSONL files |
 | `tables/build_tables.py` | Regenerates Table 4 (cross-family absolute EX) as JSON |
 | `tables/expected/` | Frozen ground truth — every published table cell, committed |
