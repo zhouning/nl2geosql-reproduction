@@ -1,0 +1,39 @@
+{
+  "model": "qwen3.6-plus",
+  "family": "qwen",
+  "sample_idx": 2,
+  "modes": {
+    "baseline": {
+      "ex": 70,
+      "n": 125,
+      "ex_rate": 0.56,
+      "valid": 109,
+      "duration_sec": null,
+      "failure_bins": {
+        "catalog": 27,
+        "dialect": 6,
+        "golden": 0,
+        "safety": 13,
+        "unknown": 9,
+        "pass": 70
+      },
+      "resumed": true
+    },
+    "full": {
+      "ex": 90,
+      "n": 125,
+      "ex_rate": 0.72,
+      "valid": 121,
+      "duration_sec": null,
+      "failure_bins": {
+        "catalog": 26,
+        "dialect": 0,
+        "golden": 0,
+        "safety": 3,
+        "unknown": 6,
+        "pass": 90
+      },
+      "resumed": true
+    }
+  }
+}

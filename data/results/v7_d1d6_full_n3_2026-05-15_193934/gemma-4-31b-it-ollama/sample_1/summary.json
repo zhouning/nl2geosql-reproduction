@@ -1,0 +1,37 @@
+{
+  "model": "gemma-4-31b-it-ollama",
+  "family": "gemma",
+  "sample_idx": 1,
+  "modes": {
+    "baseline": {
+      "ex": 74,
+      "n": 125,
+      "ex_rate": 0.592,
+      "valid": 105,
+      "duration_sec": 5573.0,
+      "failure_bins": {
+        "catalog": 26,
+        "dialect": 2,
+        "golden": 0,
+        "safety": 5,
+        "unknown": 18,
+        "pass": 74
+      }
+    },
+    "full": {
+      "ex": 87,
+      "n": 125,
+      "ex_rate": 0.696,
+      "valid": 118,
+      "duration_sec": 14368.8,
+      "failure_bins": {
+        "catalog": 25,
+        "dialect": 0,
+        "golden": 0,
+        "safety": 3,
+        "unknown": 10,
+        "pass": 87
+      }
+    }
+  }
+}

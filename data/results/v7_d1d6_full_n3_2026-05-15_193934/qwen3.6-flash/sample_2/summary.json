@@ -1,0 +1,39 @@
+{
+  "model": "qwen3.6-flash",
+  "family": "qwen",
+  "sample_idx": 2,
+  "modes": {
+    "baseline": {
+      "ex": 47,
+      "n": 125,
+      "ex_rate": 0.376,
+      "valid": 101,
+      "duration_sec": null,
+      "failure_bins": {
+        "catalog": 37,
+        "dialect": 5,
+        "golden": 0,
+        "safety": 22,
+        "unknown": 14,
+        "pass": 47
+      },
+      "resumed": true
+    },
+    "full": {
+      "ex": 71,
+      "n": 125,
+      "ex_rate": 0.568,
+      "valid": 121,
+      "duration_sec": null,
+      "failure_bins": {
+        "catalog": 31,
+        "dialect": 0,
+        "golden": 0,
+        "safety": 13,
+        "unknown": 10,
+        "pass": 71
+      },
+      "resumed": true
+    }
+  }
+}

@@ -1,0 +1,14 @@
+cff-version: 1.2.0
+title: "Reproduction package — Grounding-induced spatial regression in NL2GeoSQL on CQ-125"
+message: "If you use this dataset or code, please cite the IJGIS paper (DOI to be added on acceptance)."
+type: software
+authors:
+  - given-names: "Anonymous"
+    family-names: "Author"
+license: MIT
+url: "https://github.com/<anonymized>/nl2geosql-reproduction"
+keywords:
+  - NL2SQL
+  - PostGIS
+  - LLM evaluation
+  - reproducibility

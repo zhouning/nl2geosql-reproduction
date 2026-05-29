@@ -1,0 +1,39 @@
+name: reproduce
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  reproduce-tables:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.10', '3.11', '3.12']
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Build paper tables from frozen JSONL
+        run: python tables/build_tables.py
+
+      - name: Verify tables match expected (CI gate)
+        run: python tables/verify_tables.py
+
+      - name: Smoke-test all four eval scripts
+        run: |
+          python code/eval/cross_family_absolute_ex.py > /dev/null
+          python code/eval/cross_family_grounding_effect.py > /dev/null
+          python code/eval/three_factor_analysis.py > /dev/null
+          python code/eval/post_analysis.py \
+            --run-dir data/results/v7_d1d6_full_n3_2026-05-15_193934 \
+            --family deepseek-v4-flash > /dev/null

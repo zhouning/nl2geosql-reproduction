@@ -1,0 +1,1072 @@
+{
+  "benchmark": "chongqing_geo_nl2sql_125q_business_lang.json",
+  "n_questions": 125,
+  "n_samples": 3,
+  "families": {
+    "gemini-2.5-flash": [
+      {
+        "model": "gemini-2.5-flash",
+        "family": "gemini",
+        "sample_idx": 1,
+        "modes": {
+          "baseline": {
+            "ex": 63,
+            "n": 125,
+            "ex_rate": 0.504,
+            "valid": 112,
+            "duration_sec": null,
+            "failure_bins": {
+              "catalog": 29,
+              "dialect": 6,
+              "golden": 0,
+              "safety": 24,
+              "unknown": 3,
+              "pass": 63
+            },
+            "resumed": true
+          },
+          "full": {
+            "ex": 96,
+            "n": 125,
+            "ex_rate": 0.768,
+            "valid": 121,
+            "duration_sec": null,
+            "failure_bins": {
+              "catalog": 24,
+              "dialect": 0,
+              "golden": 0,
+              "safety": 1,
+              "unknown": 4,
+              "pass": 96
+            },
+            "resumed": true
+          }
+        }
+      },
+      {
+        "model": "gemini-2.5-flash",
+        "family": "gemini",
+        "sample_idx": 2,
+        "modes": {
+          "baseline": {
+            "ex": 63,
+            "n": 125,
+            "ex_rate": 0.504,
+            "valid": 112,
+            "duration_sec": null,
+            "failure_bins": {
+              "catalog": 29,
+              "dialect": 6,
+              "golden": 0,
+              "safety": 24,
+              "unknown": 3,
+              "pass": 63
+            },
+            "resumed": true
+          },
+          "full": {
+            "ex": 99,
+            "n": 125,
+            "ex_rate": 0.792,
+            "valid": 125,
+            "duration_sec": null,
+            "failure_bins": {
+              "catalog": 23,
+              "dialect": 0,
+              "golden": 0,
+              "safety": 1,
+              "unknown": 2,
+              "pass": 99
+            },
+            "resumed": true
+          }
+        }
+      },
+      {
+        "model": "gemini-2.5-flash",
+        "family": "gemini",
+        "sample_idx": 3,
+        "modes": {
+          "baseline": {
+            "ex": 62,
+            "n": 125,
+            "ex_rate": 0.496,
+            "valid": 111,
+            "duration_sec": null,
+            "failure_bins": {
+              "catalog": 29,
+              "dialect": 6,
+              "golden": 0,
+              "safety": 24,
+              "unknown": 4,
+              "pass": 62
+            },
+            "resumed": true
+          },
+          "full": {
+            "ex": 97,
+            "n": 125,
+            "ex_rate": 0.776,
+            "valid": 123,
+            "duration_sec": null,
+            "failure_bins": {
+              "catalog": 24,
+              "dialect": 0,
+              "golden": 0,
+              "safety": 1,
+              "unknown": 3,
+              "pass": 97
+            },
+            "resumed": true
+          }
+        }
+      }
+    ],
+    "gemini-2.5-pro": [
+      {
+        "model": "gemini-2.5-pro",
+        "family": "gemini",
+        "sample_idx": 1,
+        "modes": {
+          "baseline": {
+            "ex": 73,
+            "n": 125,
+            "ex_rate": 0.584,
+            "valid": 122,
+            "duration_sec": null,
+            "failure_bins": {
+              "catalog": 32,
+              "dialect": 1,
+              "golden": 0,
+              "safety": 16,
+              "unknown": 3,
+              "pass": 73
+            },
+            "resumed": true
+          },
+          "full": {
+            "ex": 102,
+            "n": 125,
+            "ex_rate": 0.816,
+            "valid": 122,
+            "duration_sec": null,
+            "failure_bins": {
+              "catalog": 17,
+              "dialect": 0,
+              "golden": 0,
+              "safety": 3,
+              "unknown": 3,
+              "pass": 102
+            },
+            "resumed": true
+          }
+        }
+      },
+      {
+        "model": "gemini-2.5-pro",
+        "family": "gemini",
+        "sample_idx": 2,
+        "modes": {
+          "baseline": {
+            "ex": 76,
+            "n": 125,
+            "ex_rate": 0.608,
+            "valid": 123,
+            "duration_sec": null,
+            "failure_bins": {
+              "catalog": 31,
+              "dialect": 0,
+              "golden": 0,
+              "safety": 14,
+              "unknown": 4,
+              "pass": 76
+            },
+            "resumed": true
+          },
+          "full": {
+            "ex": 97,
+            "n": 125,
+            "ex_rate": 0.776,
+            "valid": 125,
+            "duration_sec": null,
+            "failure_bins": {
+              "catalog": 25,
+              "dialect": 0,
+              "golden": 0,
+              "safety": 2,
+              "unknown": 1,
+              "pass": 97
+            },
+            "resumed": true
+          }
+        }
+      },
+      {
+        "model": "gemini-2.5-pro",
+        "family": "gemini",
+        "sample_idx": 3,
+        "modes": {
+          "baseline": {
+            "ex": 72,
+            "n": 125,
+            "ex_rate": 0.576,
+            "valid": 122,
+            "duration_sec": null,
+            "failure_bins": {
+              "catalog": 33,
+              "dialect": 0,
+              "golden": 0,
+              "safety": 16,
+              "unknown": 4,
+              "pass": 72
+            },
+            "resumed": true
+          },
+          "full": {
+            "ex": 96,
+            "n": 125,
+            "ex_rate": 0.768,
+            "valid": 123,
+            "duration_sec": null,
+            "failure_bins": {
+              "catalog": 22,
+              "dialect": 0,
+              "golden": 0,
+              "safety": 5,
+              "unknown": 2,
+              "pass": 96
+            },
+            "resumed": true
+          }
+        }
+      }
+    ],
+    "gemini-3.1-flash-lite-preview": [
+      {
+        "model": "gemini-3.1-flash-lite-preview",
+        "family": "gemini",
+        "sample_idx": 1,
+        "modes": {
+          "baseline": {
+            "ex": 70,
+            "n": 125,
+            "ex_rate": 0.56,
+            "valid": 115,
+            "duration_sec": null,
+            "failure_bins": {
+              "catalog": 31,
+              "dialect": 2,
+              "golden": 0,
+              "safety": 12,
+              "unknown": 10,
+              "pass": 70
+            },
+            "resumed": true
+          },
+          "full": {
+            "ex": 95,
+            "n": 125,
+            "ex_rate": 0.76,
+            "valid": 124,
+            "duration_sec": null,
+            "failure_bins": {
+              "catalog": 23,
+              "dialect": 0,
+              "golden": 0,
+              "safety": 5,
+              "unknown": 2,
+              "pass": 95
+            },
+            "resumed": true
+          }
+        }
+      },
+      {
+        "model": "gemini-3.1-flash-lite-preview",
+        "family": "gemini",
+        "sample_idx": 2,
+        "modes": {
+          "baseline": {
+            "ex": 71,
+            "n": 125,
+            "ex_rate": 0.568,
+            "valid": 115,
+            "duration_sec": null,
+            "failure_bins": {
+              "catalog": 30,
+              "dialect": 2,
+              "golden": 0,
+              "safety": 12,
+              "unknown": 10,
+              "pass": 71
+            },
+            "resumed": true
+          },
+          "full": {
+            "ex": 87,
+            "n": 125,
+            "ex_rate": 0.696,
+            "valid": 124,
+            "duration_sec": null,
+            "failure_bins": {
+              "catalog": 28,
+              "dialect": 0,
+              "golden": 0,
+              "safety": 8,
+              "unknown": 2,
+              "pass": 87
+            },
+            "resumed": true
+          }
+        }
+      },
+      {
+        "model": "gemini-3.1-flash-lite-preview",
+        "family": "gemini",
+        "sample_idx": 3,
+        "modes": {
+          "baseline": {
+            "ex": 71,
+            "n": 125,
+            "ex_rate": 0.568,
+            "valid": 115,
+            "duration_sec": null,
+            "failure_bins": {
+              "catalog": 30,
+              "dialect": 2,
+              "golden": 0,
+              "safety": 12,
+              "unknown": 10,
+              "pass": 71
+            },
+            "resumed": true
+          },
+          "full": {
+            "ex": 93,
+            "n": 125,
+            "ex_rate": 0.744,
+            "valid": 123,
+            "duration_sec": null,
+            "failure_bins": {
+              "catalog": 25,
+              "dialect": 0,
+              "golden": 0,
+              "safety": 5,
+              "unknown": 2,
+              "pass": 93
+            },
+            "resumed": true
+          }
+        }
+      }
+    ],
+    "gemini-3.1-pro-preview": [
+      {
+        "model": "gemini-3.1-pro-preview",
+        "family": "gemini",
+        "sample_idx": 1,
+        "modes": {
+          "baseline": {
+            "ex": 81,
+            "n": 125,
+            "ex_rate": 0.648,
+            "valid": 122,
+            "duration_sec": null,
+            "failure_bins": {
+              "catalog": 28,
+              "dialect": 0,
+              "golden": 0,
+              "safety": 13,
+              "unknown": 3,
+              "pass": 81
+            },
+            "resumed": true
+          },
+          "full": {
+            "ex": 98,
+            "n": 125,
+            "ex_rate": 0.784,
+            "valid": 123,
+            "duration_sec": null,
+            "failure_bins": {
+              "catalog": 25,
+              "dialect": 0,
+              "golden": 0,
+              "safety": 0,
+              "unknown": 2,
+              "pass": 98
+            },
+            "resumed": true
+          }
+        }
+      },
+      {
+        "model": "gemini-3.1-pro-preview",
+        "family": "gemini",
+        "sample_idx": 2,
+        "modes": {
+          "baseline": {
+            "ex": 85,
+            "n": 125,
+            "ex_rate": 0.68,
+            "valid": 122,
+            "duration_sec": null,
+            "failure_bins": {
+              "catalog": 23,
+              "dialect": 0,
+              "golden": 0,
+              "safety": 14,
+              "unknown": 3,
+              "pass": 85
+            },
+            "resumed": true
+          },
+          "full": {
+            "ex": 92,
+            "n": 125,
+            "ex_rate": 0.736,
+            "valid": 123,
+            "duration_sec": null,
+            "failure_bins": {
+              "catalog": 27,
+              "dialect": 0,
+              "golden": 0,
+              "safety": 1,
+              "unknown": 5,
+              "pass": 92
+            },
+            "resumed": true
+          }
+        }
+      },
+      {
+        "model": "gemini-3.1-pro-preview",
+        "family": "gemini",
+        "sample_idx": 3,
+        "modes": {
+          "baseline": {
+            "ex": 76,
+            "n": 125,
+            "ex_rate": 0.608,
+            "valid": 123,
+            "duration_sec": null,
+            "failure_bins": {
+              "catalog": 30,
+              "dialect": 0,
+              "golden": 0,
+              "safety": 17,
+              "unknown": 2,
+              "pass": 76
+            },
+            "resumed": true
+          },
+          "full": {
+            "ex": 91,
+            "n": 125,
+            "ex_rate": 0.728,
+            "valid": 122,
+            "duration_sec": null,
+            "failure_bins": {
+              "catalog": 28,
+              "dialect": 0,
+              "golden": 0,
+              "safety": 0,
+              "unknown": 6,
+              "pass": 91
+            },
+            "resumed": true
+          }
+        }
+      }
+    ],
+    "deepseek-v4-flash": [
+      {
+        "model": "deepseek-v4-flash",
+        "family": "deepseek",
+        "sample_idx": 1,
+        "modes": {
+          "baseline": {
+            "ex": 46,
+            "n": 125,
+            "ex_rate": 0.368,
+            "valid": 100,
+            "duration_sec": null,
+            "failure_bins": {
+              "catalog": 31,
+              "dialect": 3,
+              "golden": 0,
+              "safety": 30,
+              "unknown": 15,
+              "pass": 46
+            },
+            "resumed": true
+          },
+          "full": {
+            "ex": 86,
+            "n": 125,
+            "ex_rate": 0.688,
+            "valid": 122,
+            "duration_sec": null,
+            "failure_bins": {
+              "catalog": 26,
+              "dialect": 0,
+              "golden": 0,
+              "safety": 8,
+              "unknown": 5,
+              "pass": 86
+            },
+            "resumed": true
+          }
+        }
+      },
+      {
+        "model": "deepseek-v4-flash",
+        "family": "deepseek",
+        "sample_idx": 2,
+        "modes": {
+          "baseline": {
+            "ex": 48,
+            "n": 125,
+            "ex_rate": 0.384,
+            "valid": 104,
+            "duration_sec": null,
+            "failure_bins": {
+              "catalog": 31,
+              "dialect": 4,
+              "golden": 0,
+              "safety": 29,
+              "unknown": 13,
+              "pass": 48
+            },
+            "resumed": true
+          },
+          "full": {
+            "ex": 85,
+            "n": 125,
+            "ex_rate": 0.68,
+            "valid": 122,
+            "duration_sec": null,
+            "failure_bins": {
+              "catalog": 21,
+              "dialect": 0,
+              "golden": 0,
+              "safety": 7,
+              "unknown": 12,
+              "pass": 85
+            },
+            "resumed": true
+          }
+        }
+      },
+      {
+        "model": "deepseek-v4-flash",
+        "family": "deepseek",
+        "sample_idx": 3,
+        "modes": {
+          "baseline": {
+            "ex": 50,
+            "n": 125,
+            "ex_rate": 0.4,
+            "valid": 104,
+            "duration_sec": null,
+            "failure_bins": {
+              "catalog": 31,
+              "dialect": 4,
+              "golden": 0,
+              "safety": 27,
+              "unknown": 13,
+              "pass": 50
+            },
+            "resumed": true
+          },
+          "full": {
+            "ex": 87,
+            "n": 125,
+            "ex_rate": 0.696,
+            "valid": 121,
+            "duration_sec": null,
+            "failure_bins": {
+              "catalog": 23,
+              "dialect": 0,
+              "golden": 0,
+              "safety": 7,
+              "unknown": 8,
+              "pass": 87
+            },
+            "resumed": true
+          }
+        }
+      }
+    ],
+    "deepseek-v4-pro": [
+      {
+        "model": "deepseek-v4-pro",
+        "family": "deepseek",
+        "sample_idx": 1,
+        "modes": {
+          "baseline": {
+            "ex": 53,
+            "n": 125,
+            "ex_rate": 0.424,
+            "valid": 115,
+            "duration_sec": null,
+            "failure_bins": {
+              "catalog": 33,
+              "dialect": 5,
+              "golden": 0,
+              "safety": 29,
+              "unknown": 5,
+              "pass": 53
+            },
+            "resumed": true
+          },
+          "full": {
+            "ex": 89,
+            "n": 125,
+            "ex_rate": 0.712,
+            "valid": 118,
+            "duration_sec": null,
+            "failure_bins": {
+              "catalog": 22,
+              "dialect": 1,
+              "golden": 0,
+              "safety": 6,
+              "unknown": 7,
+              "pass": 89
+            },
+            "resumed": true
+          }
+        }
+      },
+      {
+        "model": "deepseek-v4-pro",
+        "family": "deepseek",
+        "sample_idx": 2,
+        "modes": {
+          "baseline": {
+            "ex": 51,
+            "n": 125,
+            "ex_rate": 0.408,
+            "valid": 116,
+            "duration_sec": null,
+            "failure_bins": {
+              "catalog": 33,
+              "dialect": 5,
+              "golden": 0,
+              "safety": 29,
+              "unknown": 7,
+              "pass": 51
+            },
+            "resumed": true
+          },
+          "full": {
+            "ex": 89,
+            "n": 125,
+            "ex_rate": 0.712,
+            "valid": 120,
+            "duration_sec": null,
+            "failure_bins": {
+              "catalog": 26,
+              "dialect": 2,
+              "golden": 0,
+              "safety": 3,
+              "unknown": 5,
+              "pass": 89
+            },
+            "resumed": true
+          }
+        }
+      },
+      {
+        "model": "deepseek-v4-pro",
+        "family": "deepseek",
+        "sample_idx": 3,
+        "modes": {
+          "baseline": {
+            "ex": 53,
+            "n": 125,
+            "ex_rate": 0.424,
+            "valid": 116,
+            "duration_sec": null,
+            "failure_bins": {
+              "catalog": 34,
+              "dialect": 5,
+              "golden": 0,
+              "safety": 28,
+              "unknown": 5,
+              "pass": 53
+            },
+            "resumed": true
+          },
+          "full": {
+            "ex": 87,
+            "n": 125,
+            "ex_rate": 0.696,
+            "valid": 118,
+            "duration_sec": null,
+            "failure_bins": {
+              "catalog": 25,
+              "dialect": 1,
+              "golden": 0,
+              "safety": 3,
+              "unknown": 9,
+              "pass": 87
+            },
+            "resumed": true
+          }
+        }
+      }
+    ],
+    "qwen3.6-flash": [
+      {
+        "model": "qwen3.6-flash",
+        "family": "qwen",
+        "sample_idx": 1,
+        "modes": {
+          "baseline": {
+            "ex": 50,
+            "n": 125,
+            "ex_rate": 0.4,
+            "valid": 101,
+            "duration_sec": null,
+            "failure_bins": {
+              "catalog": 36,
+              "dialect": 4,
+              "golden": 0,
+              "safety": 21,
+              "unknown": 14,
+              "pass": 50
+            },
+            "resumed": true
+          },
+          "full": {
+            "ex": 71,
+            "n": 125,
+            "ex_rate": 0.568,
+            "valid": 121,
+            "duration_sec": null,
+            "failure_bins": {
+              "catalog": 33,
+              "dialect": 0,
+              "golden": 0,
+              "safety": 12,
+              "unknown": 9,
+              "pass": 71
+            },
+            "resumed": true
+          }
+        }
+      },
+      {
+        "model": "qwen3.6-flash",
+        "family": "qwen",
+        "sample_idx": 2,
+        "modes": {
+          "baseline": {
+            "ex": 47,
+            "n": 125,
+            "ex_rate": 0.376,
+            "valid": 101,
+            "duration_sec": null,
+            "failure_bins": {
+              "catalog": 37,
+              "dialect": 5,
+              "golden": 0,
+              "safety": 22,
+              "unknown": 14,
+              "pass": 47
+            },
+            "resumed": true
+          },
+          "full": {
+            "ex": 71,
+            "n": 125,
+            "ex_rate": 0.568,
+            "valid": 121,
+            "duration_sec": null,
+            "failure_bins": {
+              "catalog": 31,
+              "dialect": 0,
+              "golden": 0,
+              "safety": 13,
+              "unknown": 10,
+              "pass": 71
+            },
+            "resumed": true
+          }
+        }
+      },
+      {
+        "model": "qwen3.6-flash",
+        "family": "qwen",
+        "sample_idx": 3,
+        "modes": {
+          "baseline": {
+            "ex": 48,
+            "n": 125,
+            "ex_rate": 0.384,
+            "valid": 101,
+            "duration_sec": null,
+            "failure_bins": {
+              "catalog": 37,
+              "dialect": 3,
+              "golden": 0,
+              "safety": 22,
+              "unknown": 15,
+              "pass": 48
+            },
+            "resumed": true
+          },
+          "full": {
+            "ex": 72,
+            "n": 125,
+            "ex_rate": 0.576,
+            "valid": 121,
+            "duration_sec": null,
+            "failure_bins": {
+              "catalog": 34,
+              "dialect": 0,
+              "golden": 0,
+              "safety": 8,
+              "unknown": 11,
+              "pass": 72
+            },
+            "resumed": true
+          }
+        }
+      }
+    ],
+    "qwen3.6-plus": [
+      {
+        "model": "qwen3.6-plus",
+        "family": "qwen",
+        "sample_idx": 1,
+        "modes": {
+          "baseline": {
+            "ex": 68,
+            "n": 125,
+            "ex_rate": 0.544,
+            "valid": 109,
+            "duration_sec": null,
+            "failure_bins": {
+              "catalog": 27,
+              "dialect": 6,
+              "golden": 0,
+              "safety": 15,
+              "unknown": 9,
+              "pass": 68
+            },
+            "resumed": true
+          },
+          "full": {
+            "ex": 89,
+            "n": 125,
+            "ex_rate": 0.712,
+            "valid": 122,
+            "duration_sec": null,
+            "failure_bins": {
+              "catalog": 27,
+              "dialect": 0,
+              "golden": 0,
+              "safety": 5,
+              "unknown": 4,
+              "pass": 89
+            },
+            "resumed": true
+          }
+        }
+      },
+      {
+        "model": "qwen3.6-plus",
+        "family": "qwen",
+        "sample_idx": 2,
+        "modes": {
+          "baseline": {
+            "ex": 70,
+            "n": 125,
+            "ex_rate": 0.56,
+            "valid": 109,
+            "duration_sec": null,
+            "failure_bins": {
+              "catalog": 27,
+              "dialect": 6,
+              "golden": 0,
+              "safety": 13,
+              "unknown": 9,
+              "pass": 70
+            },
+            "resumed": true
+          },
+          "full": {
+            "ex": 90,
+            "n": 125,
+            "ex_rate": 0.72,
+            "valid": 121,
+            "duration_sec": null,
+            "failure_bins": {
+              "catalog": 26,
+              "dialect": 0,
+              "golden": 0,
+              "safety": 3,
+              "unknown": 6,
+              "pass": 90
+            },
+            "resumed": true
+          }
+        }
+      },
+      {
+        "model": "qwen3.6-plus",
+        "family": "qwen",
+        "sample_idx": 3,
+        "modes": {
+          "baseline": {
+            "ex": 70,
+            "n": 125,
+            "ex_rate": 0.56,
+            "valid": 108,
+            "duration_sec": 497.9,
+            "failure_bins": {
+              "catalog": 27,
+              "dialect": 6,
+              "golden": 0,
+              "safety": 12,
+              "unknown": 10,
+              "pass": 70
+            }
+          },
+          "full": {
+            "ex": 97,
+            "n": 125,
+            "ex_rate": 0.776,
+            "valid": 121,
+            "duration_sec": 2611.0,
+            "failure_bins": {
+              "catalog": 21,
+              "dialect": 0,
+              "golden": 0,
+              "safety": 2,
+              "unknown": 5,
+              "pass": 97
+            }
+          }
+        }
+      }
+    ],
+    "gemma-4-31b-it-ollama": [
+      {
+        "model": "gemma-4-31b-it-ollama",
+        "family": "gemma",
+        "sample_idx": 1,
+        "modes": {
+          "baseline": {
+            "ex": 74,
+            "n": 125,
+            "ex_rate": 0.592,
+            "valid": 105,
+            "duration_sec": 5573.0,
+            "failure_bins": {
+              "catalog": 26,
+              "dialect": 2,
+              "golden": 0,
+              "safety": 5,
+              "unknown": 18,
+              "pass": 74
+            }
+          },
+          "full": {
+            "ex": 87,
+            "n": 125,
+            "ex_rate": 0.696,
+            "valid": 118,
+            "duration_sec": 14368.8,
+            "failure_bins": {
+              "catalog": 25,
+              "dialect": 0,
+              "golden": 0,
+              "safety": 3,
+              "unknown": 10,
+              "pass": 87
+            }
+          }
+        }
+      },
+      {
+        "model": "gemma-4-31b-it-ollama",
+        "family": "gemma",
+        "sample_idx": 2,
+        "modes": {
+          "baseline": {
+            "ex": 73,
+            "n": 125,
+            "ex_rate": 0.584,
+            "valid": 97,
+            "duration_sec": 5667.2,
+            "failure_bins": {
+              "catalog": 21,
+              "dialect": 4,
+              "golden": 0,
+              "safety": 3,
+              "unknown": 24,
+              "pass": 73
+            }
+          },
+          "full": {
+            "ex": 86,
+            "n": 125,
+            "ex_rate": 0.688,
+            "valid": 113,
+            "duration_sec": 13835.1,
+            "failure_bins": {
+              "catalog": 23,
+              "dialect": 0,
+              "golden": 0,
+              "safety": 1,
+              "unknown": 15,
+              "pass": 86
+            }
+          }
+        }
+      },
+      {
+        "model": "gemma-4-31b-it-ollama",
+        "family": "gemma",
+        "sample_idx": 3,
+        "modes": {
+          "baseline": {
+            "ex": 74,
+            "n": 125,
+            "ex_rate": 0.592,
+            "valid": 105,
+            "duration_sec": 5478.5,
+            "failure_bins": {
+              "catalog": 26,
+              "dialect": 4,
+              "golden": 0,
+              "safety": 5,
+              "unknown": 16,
+              "pass": 74
+            }
+          },
+          "full": {
+            "ex": 88,
+            "n": 125,
+            "ex_rate": 0.704,
+            "valid": 116,
+            "duration_sec": 12355.4,
+            "failure_bins": {
+              "catalog": 25,
+              "dialect": 0,
+              "golden": 0,
+              "safety": 1,
+              "unknown": 11,
+              "pass": 88
+            }
+          }
+        }
+      }
+    ]
+  },
+  "started_at": "2026-05-18T08:48:45.791666",
+  "finished_at": "2026-05-19T01:36:28.175365"
+}

@@ -1,0 +1,20 @@
+{
+  "title": "Reproduction package — Grounding-induced spatial regression in NL2GeoSQL on CQ-125",
+  "upload_type": "software",
+  "description": "Anonymous reproduction repository for the IJGIS submission. Contains: (1) the 125-question Chongqing PostGIS benchmark CQ-125, (2) frozen LLM execution outputs for 11 model families (gemini-2.5-flash, gemini-2.5-pro, gemini-3.1-flash-lite-preview, gemini-3.1-pro-preview, gemini-3.5-flash, deepseek-v4-flash, deepseek-v4-pro, qwen3.6-flash, qwen3.6-plus, qwen3.7-max, gemma-4-31b-it) at N=3 samples each, baseline (no grounding) and full (grounding) modes, (3) the four offline analysis scripts that reduce the JSONL to every paper table, and (4) the prompt profiles used. CI verifies that the analysis pipeline reproduces every published cell to 0.01 pp.",
+  "creators": [
+    {"name": "Anonymous Author 1"}
+  ],
+  "access_right": "open",
+  "license": "MIT",
+  "keywords": [
+    "NL2SQL",
+    "PostGIS",
+    "geospatial database",
+    "schema-aware grounding",
+    "LLM evaluation",
+    "reproducibility",
+    "GIScience"
+  ],
+  "related_identifiers": []
+}

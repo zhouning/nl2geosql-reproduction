@@ -1,0 +1,38 @@
+{
+  "model": "gemini-3.5-flash",
+  "family": "gemini",
+  "sample_idx": 2,
+  "modes": {
+    "baseline": {
+      "ex": 63,
+      "n": 125,
+      "ex_rate": 0.504,
+      "valid": 122,
+      "duration_sec": null,
+      "failure_bins": {
+        "catalog": 40,
+        "dialect": 0,
+        "golden": 0,
+        "safety": 18,
+        "unknown": 4,
+        "pass": 63
+      },
+      "resumed": true
+    },
+    "full": {
+      "ex": 68,
+      "n": 125,
+      "ex_rate": 0.544,
+      "valid": 116,
+      "duration_sec": 3102.3,
+      "failure_bins": {
+        "catalog": 40,
+        "dialect": 0,
+        "golden": 0,
+        "safety": 5,
+        "unknown": 12,
+        "pass": 68
+      }
+    }
+  }
+}

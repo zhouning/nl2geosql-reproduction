@@ -1,0 +1,39 @@
+{
+  "model": "gemini-2.5-pro",
+  "family": "gemini",
+  "sample_idx": 2,
+  "modes": {
+    "baseline": {
+      "ex": 76,
+      "n": 125,
+      "ex_rate": 0.608,
+      "valid": 123,
+      "duration_sec": null,
+      "failure_bins": {
+        "catalog": 31,
+        "dialect": 0,
+        "golden": 0,
+        "safety": 14,
+        "unknown": 4,
+        "pass": 76
+      },
+      "resumed": true
+    },
+    "full": {
+      "ex": 97,
+      "n": 125,
+      "ex_rate": 0.776,
+      "valid": 125,
+      "duration_sec": null,
+      "failure_bins": {
+        "catalog": 25,
+        "dialect": 0,
+        "golden": 0,
+        "safety": 2,
+        "unknown": 1,
+        "pass": 97
+      },
+      "resumed": true
+    }
+  }
+}

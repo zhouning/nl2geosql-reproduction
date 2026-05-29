@@ -1,0 +1,122 @@
+{
+  "benchmark": "chongqing_geo_nl2sql_125q_business_lang.json",
+  "n_questions": 125,
+  "n_samples": 3,
+  "families": {
+    "qwen3.7-max": [
+      {
+        "model": "qwen3.7-max",
+        "family": "qwen",
+        "sample_idx": 1,
+        "modes": {
+          "baseline": {
+            "ex": 68,
+            "n": 125,
+            "ex_rate": 0.544,
+            "valid": 114,
+            "duration_sec": 411.3,
+            "failure_bins": {
+              "catalog": 39,
+              "dialect": 1,
+              "golden": 0,
+              "safety": 10,
+              "unknown": 7,
+              "pass": 68
+            }
+          },
+          "full": {
+            "ex": 97,
+            "n": 125,
+            "ex_rate": 0.776,
+            "valid": 125,
+            "duration_sec": 1025.8,
+            "failure_bins": {
+              "catalog": 26,
+              "dialect": 0,
+              "golden": 0,
+              "safety": 2,
+              "unknown": 0,
+              "pass": 97
+            }
+          }
+        }
+      },
+      {
+        "model": "qwen3.7-max",
+        "family": "qwen",
+        "sample_idx": 2,
+        "modes": {
+          "baseline": {
+            "ex": 68,
+            "n": 125,
+            "ex_rate": 0.544,
+            "valid": 114,
+            "duration_sec": 435.7,
+            "failure_bins": {
+              "catalog": 39,
+              "dialect": 1,
+              "golden": 0,
+              "safety": 10,
+              "unknown": 7,
+              "pass": 68
+            }
+          },
+          "full": {
+            "ex": 93,
+            "n": 125,
+            "ex_rate": 0.744,
+            "valid": 124,
+            "duration_sec": 1455.6,
+            "failure_bins": {
+              "catalog": 30,
+              "dialect": 0,
+              "golden": 0,
+              "safety": 1,
+              "unknown": 1,
+              "pass": 93
+            }
+          }
+        }
+      },
+      {
+        "model": "qwen3.7-max",
+        "family": "qwen",
+        "sample_idx": 3,
+        "modes": {
+          "baseline": {
+            "ex": 65,
+            "n": 125,
+            "ex_rate": 0.52,
+            "valid": 113,
+            "duration_sec": 409.1,
+            "failure_bins": {
+              "catalog": 39,
+              "dialect": 2,
+              "golden": 0,
+              "safety": 12,
+              "unknown": 7,
+              "pass": 65
+            }
+          },
+          "full": {
+            "ex": 87,
+            "n": 125,
+            "ex_rate": 0.696,
+            "valid": 124,
+            "duration_sec": 1180.8,
+            "failure_bins": {
+              "catalog": 32,
+              "dialect": 0,
+              "golden": 0,
+              "safety": 4,
+              "unknown": 2,
+              "pass": 87
+            }
+          }
+        }
+      }
+    ]
+  },
+  "started_at": "2026-05-22T09:57:40.067647",
+  "finished_at": "2026-05-22T11:20:02.382685"
+}

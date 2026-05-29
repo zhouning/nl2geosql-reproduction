@@ -1,0 +1,39 @@
+{
+  "model": "deepseek-v4-flash",
+  "family": "deepseek",
+  "sample_idx": 2,
+  "modes": {
+    "baseline": {
+      "ex": 48,
+      "n": 125,
+      "ex_rate": 0.384,
+      "valid": 104,
+      "duration_sec": null,
+      "failure_bins": {
+        "catalog": 31,
+        "dialect": 4,
+        "golden": 0,
+        "safety": 29,
+        "unknown": 13,
+        "pass": 48
+      },
+      "resumed": true
+    },
+    "full": {
+      "ex": 85,
+      "n": 125,
+      "ex_rate": 0.68,
+      "valid": 122,
+      "duration_sec": null,
+      "failure_bins": {
+        "catalog": 21,
+        "dialect": 0,
+        "golden": 0,
+        "safety": 7,
+        "unknown": 12,
+        "pass": 85
+      },
+      "resumed": true
+    }
+  }
+}

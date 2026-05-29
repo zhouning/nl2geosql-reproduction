@@ -1,0 +1,125 @@
+{
+  "benchmark": "chongqing_geo_nl2sql_125q_business_lang.json",
+  "n_questions": 125,
+  "n_samples": 3,
+  "families": {
+    "gemini-3.5-flash": [
+      {
+        "model": "gemini-3.5-flash",
+        "family": "gemini",
+        "sample_idx": 1,
+        "modes": {
+          "baseline": {
+            "ex": 66,
+            "n": 125,
+            "ex_rate": 0.528,
+            "valid": 124,
+            "duration_sec": null,
+            "failure_bins": {
+              "catalog": 40,
+              "dialect": 0,
+              "golden": 0,
+              "safety": 17,
+              "unknown": 2,
+              "pass": 66
+            },
+            "resumed": true
+          },
+          "full": {
+            "ex": 67,
+            "n": 125,
+            "ex_rate": 0.536,
+            "valid": 121,
+            "duration_sec": null,
+            "failure_bins": {
+              "catalog": 48,
+              "dialect": 0,
+              "golden": 0,
+              "safety": 3,
+              "unknown": 7,
+              "pass": 67
+            },
+            "resumed": true
+          }
+        }
+      },
+      {
+        "model": "gemini-3.5-flash",
+        "family": "gemini",
+        "sample_idx": 2,
+        "modes": {
+          "baseline": {
+            "ex": 63,
+            "n": 125,
+            "ex_rate": 0.504,
+            "valid": 122,
+            "duration_sec": null,
+            "failure_bins": {
+              "catalog": 40,
+              "dialect": 0,
+              "golden": 0,
+              "safety": 18,
+              "unknown": 4,
+              "pass": 63
+            },
+            "resumed": true
+          },
+          "full": {
+            "ex": 68,
+            "n": 125,
+            "ex_rate": 0.544,
+            "valid": 116,
+            "duration_sec": 3102.3,
+            "failure_bins": {
+              "catalog": 40,
+              "dialect": 0,
+              "golden": 0,
+              "safety": 5,
+              "unknown": 12,
+              "pass": 68
+            }
+          }
+        }
+      },
+      {
+        "model": "gemini-3.5-flash",
+        "family": "gemini",
+        "sample_idx": 3,
+        "modes": {
+          "baseline": {
+            "ex": 65,
+            "n": 125,
+            "ex_rate": 0.52,
+            "valid": 122,
+            "duration_sec": 1711.6,
+            "failure_bins": {
+              "catalog": 40,
+              "dialect": 0,
+              "golden": 0,
+              "safety": 15,
+              "unknown": 5,
+              "pass": 65
+            }
+          },
+          "full": {
+            "ex": 65,
+            "n": 125,
+            "ex_rate": 0.52,
+            "valid": 117,
+            "duration_sec": 6326.8,
+            "failure_bins": {
+              "catalog": 42,
+              "dialect": 0,
+              "golden": 0,
+              "safety": 5,
+              "unknown": 13,
+              "pass": 65
+            }
+          }
+        }
+      }
+    ]
+  },
+  "started_at": "2026-05-23T09:37:41.664870",
+  "finished_at": "2026-05-23T12:43:55.941124"
+}

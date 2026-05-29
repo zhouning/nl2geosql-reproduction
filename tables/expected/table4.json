@@ -1,0 +1,521 @@
+{
+  "families": [
+    {
+      "family": "gemini-2.5-flash",
+      "spatial_A": {
+        "mean": 54.9,
+        "sd": 0.68,
+        "n_samples": 3
+      },
+      "spatial_B": {
+        "mean": 68.63,
+        "sd": 1.8,
+        "n_samples": 3
+      },
+      "spatial_delta": 13.73,
+      "robust_A": {
+        "mean": 40.0,
+        "sd": 0.0,
+        "n_samples": 3
+      },
+      "robust_B": {
+        "mean": 97.5,
+        "sd": 0.0,
+        "n_samples": 3
+      },
+      "robust_delta": 57.5,
+      "overall_A": {
+        "mean": 50.13,
+        "sd": 0.46,
+        "n_samples": 3
+      },
+      "overall_B": {
+        "mean": 77.87,
+        "sd": 1.22,
+        "n_samples": 3
+      },
+      "overall_delta": 27.74,
+      "medium_A": {
+        "mean": 50.0,
+        "sd": 0.0,
+        "n_samples": 3
+      },
+      "medium_B": {
+        "mean": 66.67,
+        "sd": 5.56,
+        "n_samples": 3
+      },
+      "medium_delta": 16.67
+    },
+    {
+      "family": "gemini-2.5-pro",
+      "spatial_A": {
+        "mean": 57.65,
+        "sd": 1.18,
+        "n_samples": 3
+      },
+      "spatial_B": {
+        "mean": 72.55,
+        "sd": 3.59,
+        "n_samples": 3
+      },
+      "spatial_delta": 14.9,
+      "robust_A": {
+        "mean": 61.67,
+        "sd": 2.89,
+        "n_samples": 3
+      },
+      "robust_B": {
+        "mean": 91.67,
+        "sd": 3.82,
+        "n_samples": 3
+      },
+      "robust_delta": 30.0,
+      "overall_A": {
+        "mean": 58.93,
+        "sd": 1.67,
+        "n_samples": 3
+      },
+      "overall_B": {
+        "mean": 78.67,
+        "sd": 2.57,
+        "n_samples": 3
+      },
+      "overall_delta": 19.74,
+      "medium_A": {
+        "mean": 53.7,
+        "sd": 4.24,
+        "n_samples": 3
+      },
+      "medium_B": {
+        "mean": 76.85,
+        "sd": 3.21,
+        "n_samples": 3
+      },
+      "medium_delta": 23.15
+    },
+    {
+      "family": "gemini-3.1-flash-lite-preview",
+      "spatial_A": {
+        "mean": 50.2,
+        "sd": 0.68,
+        "n_samples": 3
+      },
+      "spatial_B": {
+        "mean": 67.84,
+        "sd": 2.96,
+        "n_samples": 3
+      },
+      "spatial_delta": 17.64,
+      "robust_A": {
+        "mean": 70.0,
+        "sd": 0.0,
+        "n_samples": 3
+      },
+      "robust_B": {
+        "mean": 85.0,
+        "sd": 4.33,
+        "n_samples": 3
+      },
+      "robust_delta": 15.0,
+      "overall_A": {
+        "mean": 56.53,
+        "sd": 0.46,
+        "n_samples": 3
+      },
+      "overall_B": {
+        "mean": 73.33,
+        "sd": 3.33,
+        "n_samples": 3
+      },
+      "overall_delta": 16.8,
+      "medium_A": {
+        "mean": 47.22,
+        "sd": 0.0,
+        "n_samples": 3
+      },
+      "medium_B": {
+        "mean": 69.44,
+        "sd": 4.81,
+        "n_samples": 3
+      },
+      "medium_delta": 22.22
+    },
+    {
+      "family": "gemini-3.1-pro-preview",
+      "spatial_A": {
+        "mean": 65.1,
+        "sd": 3.78,
+        "n_samples": 3
+      },
+      "spatial_B": {
+        "mean": 63.53,
+        "sd": 4.24,
+        "n_samples": 3
+      },
+      "spatial_delta": -1.57,
+      "robust_A": {
+        "mean": 63.33,
+        "sd": 5.2,
+        "n_samples": 3
+      },
+      "robust_B": {
+        "mean": 99.17,
+        "sd": 1.44,
+        "n_samples": 3
+      },
+      "robust_delta": 35.84,
+      "overall_A": {
+        "mean": 64.53,
+        "sd": 3.61,
+        "n_samples": 3
+      },
+      "overall_B": {
+        "mean": 74.93,
+        "sd": 3.03,
+        "n_samples": 3
+      },
+      "overall_delta": 10.4,
+      "medium_A": {
+        "mean": 76.85,
+        "sd": 3.21,
+        "n_samples": 3
+      },
+      "medium_B": {
+        "mean": 62.04,
+        "sd": 8.93,
+        "n_samples": 3
+      },
+      "medium_delta": -14.81
+    },
+    {
+      "family": "gemini-3.5-flash",
+      "spatial_A": {
+        "mean": 48.63,
+        "sd": 1.8,
+        "n_samples": 3
+      },
+      "spatial_B": {
+        "mean": 36.47,
+        "sd": 2.04,
+        "n_samples": 3
+      },
+      "spatial_delta": -12.16,
+      "robust_A": {
+        "mean": 58.33,
+        "sd": 3.82,
+        "n_samples": 3
+      },
+      "robust_B": {
+        "mean": 89.17,
+        "sd": 2.89,
+        "n_samples": 3
+      },
+      "robust_delta": 30.84,
+      "overall_A": {
+        "mean": 51.73,
+        "sd": 1.22,
+        "n_samples": 3
+      },
+      "overall_B": {
+        "mean": 53.33,
+        "sd": 1.22,
+        "n_samples": 3
+      },
+      "overall_delta": 1.6,
+      "medium_A": {
+        "mean": 53.7,
+        "sd": 3.21,
+        "n_samples": 3
+      },
+      "medium_B": {
+        "mean": 37.04,
+        "sd": 4.24,
+        "n_samples": 3
+      },
+      "medium_delta": -16.66
+    },
+    {
+      "family": "deepseek-v4-flash",
+      "spatial_A": {
+        "mean": 43.14,
+        "sd": 0.68,
+        "n_samples": 3
+      },
+      "spatial_B": {
+        "mean": 62.75,
+        "sd": 1.36,
+        "n_samples": 3
+      },
+      "spatial_delta": 19.61,
+      "robust_A": {
+        "mean": 28.33,
+        "sd": 3.82,
+        "n_samples": 3
+      },
+      "robust_B": {
+        "mean": 81.67,
+        "sd": 1.44,
+        "n_samples": 3
+      },
+      "robust_delta": 53.34,
+      "overall_A": {
+        "mean": 38.4,
+        "sd": 1.6,
+        "n_samples": 3
+      },
+      "overall_B": {
+        "mean": 68.8,
+        "sd": 0.8,
+        "n_samples": 3
+      },
+      "overall_delta": 30.4,
+      "medium_A": {
+        "mean": 33.33,
+        "sd": 2.78,
+        "n_samples": 3
+      },
+      "medium_B": {
+        "mean": 60.19,
+        "sd": 1.6,
+        "n_samples": 3
+      },
+      "medium_delta": 26.86
+    },
+    {
+      "family": "deepseek-v4-pro",
+      "spatial_A": {
+        "mean": 48.24,
+        "sd": 1.18,
+        "n_samples": 3
+      },
+      "spatial_B": {
+        "mean": 61.57,
+        "sd": 2.96,
+        "n_samples": 3
+      },
+      "spatial_delta": 13.33,
+      "robust_A": {
+        "mean": 28.33,
+        "sd": 1.44,
+        "n_samples": 3
+      },
+      "robust_B": {
+        "mean": 90.0,
+        "sd": 4.33,
+        "n_samples": 3
+      },
+      "robust_delta": 61.67,
+      "overall_A": {
+        "mean": 41.87,
+        "sd": 0.92,
+        "n_samples": 3
+      },
+      "overall_B": {
+        "mean": 70.67,
+        "sd": 0.92,
+        "n_samples": 3
+      },
+      "overall_delta": 28.8,
+      "medium_A": {
+        "mean": 45.37,
+        "sd": 1.6,
+        "n_samples": 3
+      },
+      "medium_B": {
+        "mean": 60.19,
+        "sd": 1.6,
+        "n_samples": 3
+      },
+      "medium_delta": 14.82
+    },
+    {
+      "family": "qwen3.6-flash",
+      "spatial_A": {
+        "mean": 35.29,
+        "sd": 1.18,
+        "n_samples": 3
+      },
+      "spatial_B": {
+        "mean": 49.8,
+        "sd": 2.45,
+        "n_samples": 3
+      },
+      "spatial_delta": 14.51,
+      "robust_A": {
+        "mean": 45.83,
+        "sd": 1.44,
+        "n_samples": 3
+      },
+      "robust_B": {
+        "mean": 72.5,
+        "sd": 6.61,
+        "n_samples": 3
+      },
+      "robust_delta": 26.67,
+      "overall_A": {
+        "mean": 38.67,
+        "sd": 1.22,
+        "n_samples": 3
+      },
+      "overall_B": {
+        "mean": 57.07,
+        "sd": 0.46,
+        "n_samples": 3
+      },
+      "overall_delta": 18.4,
+      "medium_A": {
+        "mean": 23.15,
+        "sd": 1.6,
+        "n_samples": 3
+      },
+      "medium_B": {
+        "mean": 50.0,
+        "sd": 2.78,
+        "n_samples": 3
+      },
+      "medium_delta": 26.85
+    },
+    {
+      "family": "qwen3.6-plus",
+      "spatial_A": {
+        "mean": 50.2,
+        "sd": 0.68,
+        "n_samples": 3
+      },
+      "spatial_B": {
+        "mean": 65.1,
+        "sd": 3.78,
+        "n_samples": 3
+      },
+      "spatial_delta": 14.9,
+      "robust_A": {
+        "mean": 66.67,
+        "sd": 3.82,
+        "n_samples": 3
+      },
+      "robust_B": {
+        "mean": 91.67,
+        "sd": 3.82,
+        "n_samples": 3
+      },
+      "robust_delta": 25.0,
+      "overall_A": {
+        "mean": 55.47,
+        "sd": 0.92,
+        "n_samples": 3
+      },
+      "overall_B": {
+        "mean": 73.6,
+        "sd": 3.49,
+        "n_samples": 3
+      },
+      "overall_delta": 18.13,
+      "medium_A": {
+        "mean": 49.07,
+        "sd": 1.6,
+        "n_samples": 3
+      },
+      "medium_B": {
+        "mean": 60.19,
+        "sd": 6.99,
+        "n_samples": 3
+      },
+      "medium_delta": 11.12
+    },
+    {
+      "family": "qwen3.7-max",
+      "spatial_A": {
+        "mean": 44.31,
+        "sd": 0.68,
+        "n_samples": 3
+      },
+      "spatial_B": {
+        "mean": 64.31,
+        "sd": 4.75,
+        "n_samples": 3
+      },
+      "spatial_delta": 20.0,
+      "robust_A": {
+        "mean": 73.33,
+        "sd": 2.89,
+        "n_samples": 3
+      },
+      "robust_B": {
+        "mean": 94.17,
+        "sd": 3.82,
+        "n_samples": 3
+      },
+      "robust_delta": 20.84,
+      "overall_A": {
+        "mean": 53.6,
+        "sd": 1.39,
+        "n_samples": 3
+      },
+      "overall_B": {
+        "mean": 73.87,
+        "sd": 4.03,
+        "n_samples": 3
+      },
+      "overall_delta": 20.27,
+      "medium_A": {
+        "mean": 41.67,
+        "sd": 2.78,
+        "n_samples": 3
+      },
+      "medium_B": {
+        "mean": 56.48,
+        "sd": 6.99,
+        "n_samples": 3
+      },
+      "medium_delta": 14.81
+    },
+    {
+      "family": "gemma-4-31b-it",
+      "spatial_A": {
+        "mean": 44.71,
+        "sd": 2.04,
+        "n_samples": 3
+      },
+      "spatial_B": {
+        "mean": 57.25,
+        "sd": 1.8,
+        "n_samples": 3
+      },
+      "spatial_delta": 12.54,
+      "robust_A": {
+        "mean": 89.17,
+        "sd": 2.89,
+        "n_samples": 3
+      },
+      "robust_B": {
+        "mean": 95.83,
+        "sd": 2.89,
+        "n_samples": 3
+      },
+      "robust_delta": 6.66,
+      "overall_A": {
+        "mean": 58.93,
+        "sd": 0.46,
+        "n_samples": 3
+      },
+      "overall_B": {
+        "mean": 69.6,
+        "sd": 0.8,
+        "n_samples": 3
+      },
+      "overall_delta": 10.67,
+      "medium_A": {
+        "mean": 37.04,
+        "sd": 3.21,
+        "n_samples": 3
+      },
+      "medium_B": {
+        "mean": 52.78,
+        "sd": 4.81,
+        "n_samples": 3
+      },
+      "medium_delta": 15.74
+    }
+  ]
+}

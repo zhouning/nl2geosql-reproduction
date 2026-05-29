@@ -1,0 +1,12 @@
+# No external dependencies required for the reproduction pipeline:
+# all statistical functions (paired t-test, McNemar exact, Wilson 95% CI)
+# are implemented inline in code/eval/post_analysis.py. Python 3.10+ stdlib
+# (json, statistics, math, pathlib, argparse, collections) is sufficient.
+#
+# This file is intentionally empty of pinned dependencies so the reviewer can
+# run reproduction in any Python 3.10+ environment without dependency hell.
+# Listed below for clarity:
+#
+#   - python >= 3.10  (uses union-type syntax: list[dict])
+#   - no scipy, no pandas, no numpy, no statsmodels
+#   - no LLM SDK (LLM outputs are frozen in data/results/)
