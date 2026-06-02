@@ -1,6 +1,6 @@
 # Reproduction guide
 
-This document walks through reproducing every number in the IJGIS paper. The
+This document walks through reproducing the IJGIS submission analyses. The
 total runtime on a 2020-era laptop is **under 90 seconds**; no GPU, no
 PostgreSQL, no LLM API key, and no network access is required.
 
@@ -16,7 +16,7 @@ python -m venv .venv
 pip install -r requirements.txt
 ```
 
-The dependency list is intentionally minimal (4 runtime packages). All
+The dependency list is intentionally minimal. All
 statistical machinery — paired t-tests, McNemar exact two-sided, Wilson 95% CIs
 — is implemented in `code/eval/post_analysis.py` so that no SciPy/StatsModels
 version-pinning concerns leak into the reviewer's environment.
@@ -26,46 +26,65 @@ version-pinning concerns leak into the reviewer's environment.
 ```bash
 python tables/build_tables.py       # ~2 s
 python tables/verify_tables.py      # ~0.5 s, exits 0 if everything matches
+python tables/build_codex_tables.py
+python tables/verify_codex_tables.py
 ```
 
-If `verify_tables.py` exits 0, every cell in the paper's Table 4 is
-reproduced bit-exact (to 0.01 pp) from the frozen JSONL.
+If `verify_tables.py` exits 0, the legacy per-sample cross-family absolute-EX
+table is reproduced bit-exact (to 0.01 pp) from the frozen JSONL. If
+`verify_codex_tables.py` exits 0, the revised manuscript's majority-vote
+headline checks match the current IJGIS submission.
 
 ## Reproducing each table
 
-### Table 4 — cross-family absolute EX (11 families × 2 subsets)
+### Revised manuscript — question-level majority-vote headline checks
+
+```bash
+python tables/build_codex_tables.py
+python tables/verify_codex_tables.py
+```
+
+This is the authoritative check for the revised IJGIS submission. It uses
+uniform `N=3`, computes a majority-vote execution outcome per question, and then
+uses one exact two-sided McNemar test on the per-question table. The verifier
+checks the current headline values, including `gemini-3.5-flash` Spatial panel
+`Δ=-10.59 pp, p=0.136`, focused Spatial `B-A=-14.12 pp, b/c=21/9, p=0.043`,
+focused Robustness `B-A=+32.50 pp, p=0.0002`, and mini-mod Spatial
+`C-B=+8.24 pp, p=0.092`.
+
+### Legacy Table 4 — cross-family absolute EX (11 families × 2 subsets)
 
 ```bash
 python code/eval/cross_family_absolute_ex.py
 ```
 
-The output ends with a `# TeX-ready rows` block. The eleven `\\` lines are
-the verbatim body of `tabular` cells in the paper's `gisr_section.tex`. To
-copy the LaTeX into the manuscript, redirect:
+The output ends with a `# TeX-ready rows` block. These rows are retained for
+auditability against earlier drafts. To inspect the LaTeX rows, redirect:
 
 ```bash
 python code/eval/cross_family_absolute_ex.py | \
   awk '/# TeX-ready/,0'
 ```
 
-### Table 5 — paired Δ across families with McNemar exact two-sided p
+### Legacy paired Δ across families with pooled/per-sample McNemar exact two-sided p
 
 ```bash
 python code/eval/cross_family_grounding_effect.py
 ```
 
 The output covers every subset (Overall, Robust, Spatial, Easy, Medium, Hard)
-for every family. Spatial-subset rows feed Table 5 and the regression
-direction-marker in §6.6.
+for every family under an earlier pooled/per-sample convention. It is kept as a
+diagnostic, not as the revised manuscript's primary inferential convention.
 
-### Tables 2–3 — three-factor decomposition (gemini-3.5-flash only)
+### Legacy three-factor decomposition (gemini-3.5-flash only)
 
 ```bash
 python code/eval/three_factor_analysis.py
 ```
 
 Cell A (no grounding) and cell C (grounding + mini-mod) are at N=5; cell B
-(grounding only, no mini-mod) is at N=3. The script handles the asymmetry.
+(grounding only, no mini-mod) is at N=3. The revised manuscript caps A and C to
+`N=3` for symmetry; use `tables/build_codex_tables.py` for that convention.
 Output includes:
 * Per-cell EX on Overall / Robustness / Spatial / Easy / Medium / Hard
 * Top-category breakdown
@@ -148,10 +167,10 @@ data/results/v7_gemini35_recheck_n3_2026-05-22_095253/
 
 data/results/v7_gemini35_minimod_n3_20260524/
    └── gemini-3.5-flash/sample_{1..5}/records_{baseline,full}.jsonl
-       (cell A and cell C of Tables 2–3)
+       (source for cell A and cell C; revised checks cap these to N=3)
 ```
 
-The N=3 vs N=5 asymmetry is described in §6.10 (Limitations) of the paper.
+The N=3 vs N=5 asymmetry is described in the Limitations section of the paper.
 
 ## Troubleshooting
 

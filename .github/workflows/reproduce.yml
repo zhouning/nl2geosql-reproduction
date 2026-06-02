@@ -29,6 +29,12 @@ jobs:
       - name: Verify tables match expected (CI gate)
         run: python tables/verify_tables.py
 
+      - name: Build revised majority-vote checks
+        run: python tables/build_codex_tables.py
+
+      - name: Verify revised majority-vote headline values
+        run: python tables/verify_codex_tables.py
+
       - name: Smoke-test all four eval scripts
         run: |
           python code/eval/cross_family_absolute_ex.py > /dev/null

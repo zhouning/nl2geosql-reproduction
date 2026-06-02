@@ -1,20 +1,19 @@
-# Reproduction package — Grounding-induced spatial regression in NL2GeoSQL on CQ-125
+# Reproduction package — subset-decomposed grounding effects in NL2GeoSQL on CQ-125
 
 > Anonymous reproduction repository for the IJGIS submission.
 > Code, prompts, benchmark questions, and frozen LLM evaluation outputs needed
-> to reproduce every number in the paper's headline tables.
+> to reproduce the paper's subset-decomposed grounding analyses.
 
 ## What this repository contains
 
 | Path | Contents |
 |---|---|
-| `code/eval/` | Four offline analysis scripts (no LLM API needed) |
+| `code/eval/` | Offline analysis scripts (no LLM API needed) |
 | `code/prompts/` | The five prompt families used in the paper (`gemini`, `gemini-3.5-flash`, `deepseek`, `qwen`, `gemma`) plus shared `domain_facts.md` |
 | `data/benchmark/` | The 125-question CQ-125 benchmark (questions + gold SQL + metadata), the 40-question robustness split, and a `schema.sql` structure-only dump of the 11 PostGIS tables referenced by gold SQL (no row data — reproduction does not require a database) |
 | `data/results/` | Frozen `records_baseline.jsonl` and `records_full.jsonl` for every (family × sample) cell — 11 families × N=3 samples × 2 modes = 66 JSONL files |
-| `tables/build_tables.py` | Regenerates Table 4 (cross-family absolute EX) as JSON |
-| `tables/expected/` | Frozen ground truth — every published table cell, committed |
-| `tables/verify_tables.py` | Diffs `built/` against `expected/`; CI gate |
+| `tables/build_tables.py` / `tables/verify_tables.py` | Legacy per-sample cross-family absolute-EX table gate retained for continuity |
+| `tables/build_codex_tables.py` / `tables/verify_codex_tables.py` | Revised manuscript checks: question-level majority vote followed by exact two-sided McNemar tests |
 
 ## One-command reproduction
 
@@ -22,25 +21,39 @@
 pip install -r requirements.txt   # ~5 packages, no LLM API, no PostgreSQL
 python tables/build_tables.py
 python tables/verify_tables.py    # exits 0 iff everything matches the paper
+python tables/build_codex_tables.py
+python tables/verify_codex_tables.py
 ```
 
 Expected last line: `OK: tables/built/table4.json matches tables/expected/table4.json (11 families)`.
+For the revised IJGIS manuscript, also expect:
+`OK: codex majority-vote headline checks match the revised manuscript`.
 
 ## Reproducing each paper table
 
-**Table 4 (cross-family absolute EX, 11 families):**
+**Legacy cross-family absolute EX (per-sample mean, retained for continuity):**
 ```bash
 python code/eval/cross_family_absolute_ex.py
 ```
 The `# TeX-ready rows` block at the bottom is the verbatim `tabular` body
-used in the paper.
+used in an earlier draft.
 
-**Table 5 (cross-family paired Δ + McNemar):**
+**Legacy cross-family paired Δ + pooled/per-sample McNemar:**
 ```bash
 python code/eval/cross_family_grounding_effect.py
 ```
 
-**Tables 2–3 (gemini-3.5-flash three-condition cells + paired Δ):**
+**Revised manuscript majority-vote headline checks:**
+```bash
+python tables/build_codex_tables.py
+python tables/verify_codex_tables.py
+```
+
+This is the authoritative check for the revised IJGIS submission. It caps each
+cell at `N=3`, reduces repeated stochastic samples to one question-level
+majority vote, and then applies one exact two-sided McNemar test per subset.
+
+**Legacy gemini-3.5-flash three-condition cells + paired Δ:**
 ```bash
 python code/eval/three_factor_analysis.py
 ```
@@ -57,20 +70,26 @@ python code/eval/post_analysis.py \
 The paper studies the **grounding effect** on PostGIS NL2SQL: paired comparison
 of `records_baseline.jsonl` (no schema-aware grounding context, "cell A") against
 `records_full.jsonl` (with grounding context, "cell B") on the same 125
-questions. The headline finding is that on `gemini-3.5-flash`, grounding
-*degrades* spatial-subset execution accuracy by 12.16 pp (paired McNemar
-$p{=}0.001$) while concurrently lifting robustness-subset accuracy by 30.83 pp.
-Cross-family evaluation across 11 LLMs (the JSONL in `data/results/`) shows
-this pathology is unique to `gemini-3.5-flash`; the other 10 families gain on
-both subsets.
+questions. The revised manuscript uses a de-pooled statistical convention:
+question-level majority vote across `N=3` stochastic samples followed by one
+exact two-sided McNemar test on the per-question table. Under this convention,
+grounding improves the Robustness subset for all 11 families by point estimate,
+whereas Spatial effects are heterogeneous across families. The most negative
+cross-family panel estimate is `gemini-3.5-flash` on Spatial
+(`Δ=-10.59 pp`, `p=0.136`), so the paper treats it as a negative-tail
+observation rather than a confirmed stable family-level regression. A focused
+three-condition diagnostic on `gemini-3.5-flash` gives an unadjusted Spatial
+`B-A=-14.12 pp` (`b/c=21/9`, `p=0.043`) and Robustness `B-A=+32.50 pp`
+(`p=0.0002`).
 
 For the analysis tools cited in the paper:
-* `cross_family_absolute_ex.py` — Table 4 (the new addition: per-family A/B
-  absolute EX with sd, plus paired Δ).
-* `cross_family_grounding_effect.py` — paired McNemar across all 11 families
-  for every (subset × difficulty) cell.
-* `three_factor_analysis.py` — A/B/C three-condition decomposition for
-  `gemini-3.5-flash` (no grounding / grounding only / grounding + mini-mod).
+* `tables/build_codex_tables.py` — revised majority-vote reductions used for
+  the current IJGIS submission.
+* `tables/verify_codex_tables.py` — checks the current manuscript's headline
+  values (`-10.59`, `-14.12`, `+32.50`, `+8.24`, and related p-values).
+* `cross_family_absolute_ex.py`, `cross_family_grounding_effect.py`, and
+  `three_factor_analysis.py` — legacy per-sample/pooled diagnostics retained
+  for auditability and comparison with earlier drafts.
 * `post_analysis.py` — full per-family report including failure-bin
   transitions, top-category Δ, and unknown-bin sub-classification.
 
