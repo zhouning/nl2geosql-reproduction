@@ -1,87 +1,145 @@
-# Paper 2 CEUS Anonymous Submission Package
+# Reproduction package — subset-decomposed grounding effects in NL2GeoSQL on CQ-125
 
-This repository currently hosts the anonymous submission package and audit artifacts for **Paper 2**, a Computers, Environment and Urban Systems submission on cadastral-style land-use optimisation.
+> Anonymous reproduction repository for the IJGIS submission.
+> Code, prompts, benchmark questions, and frozen LLM evaluation outputs needed
+> to reproduce the paper's subset-decomposed grounding analyses.
 
-The latest manuscript asks a practical decision-support question: **when parcel-level deep reinforcement learning (DRL) is expensive to train, does it add enough value over transparent exact-delta local baselines to justify deployment?**
-
-## Current Paper 2 Message
-
-The paper evaluates farmland-forest parcel exchange on a reproducible synthetic-parcel benchmark generated from public geospatial sources: Copernicus DEM, Impact Observatory land cover, and SLIC tessellation. The benchmark is heuristically matched to aggregate structural ranges for mountainous cadastral settings and avoids restricted cadastral boundary data.
-
-The main empirical result is bounded but strong:
-
-- A slope-exact local baseline reduces area-weighted farmland slope by 5.9 to 9.7 percentage points across three synthetic regions.
-- A seven-weight contiguity-aware exact-delta local sweep recovers positive-contiguity local points in every region.
-- The sampled local grid Pareto-dominates all 6 DRL mean outcomes and 27 of 30 deterministic DRL rollouts.
-- A stricter no-reuse action-mask parity audit, matching the DRL converted-parcel constraint, leaves the slope-exact local outcomes unchanged and still dominates all 6 DRL mean outcomes; individual-run dominance is 24 of 30.
-- A top-5 two-step local lookahead changes one-step local slope outcomes by at most 0.154 percentage points.
-- Fixed-policy decoding across 25, 50, 100, and 200 paired exchanges does not remove the slope-exact local advantage.
-- DRL learns non-trivial spatial clustering, but weak inter-swap coupling and train-evaluation mismatch limit its deterministic decision-support value.
-
-The paper does **not** claim that all DRL or all metaheuristics fail for land-use optimisation. It makes a narrower claim: in the tested low-intervention, sparse-adjacency synthetic parcel regimes, Maskable PPO with a scorer-MLP policy did not justify its training cost relative to transparent exact-delta local diagnostics.
-
-## Practical Implication
-
-For CEUS-style decision support, the recommended screening workflow is:
-
-1. Characterise the planning area: parcel-area heterogeneity, Queen degree, farm-forest ratio, candidate-pool size, and exchange-budget ratio.
-2. Run transparent local diagnostics: slope-only ranking, slope-exact exact-delta ranking, and a scalarised slope-contiguity local sweep.
-3. Compare the local frontier with planning thresholds.
-4. Escalate to DRL or stronger metaheuristics only when the local frontier fails or when diagnostics suggest strong inter-swap coupling.
-
-## Repository Layout
+## What this repository contains
 
 | Path | Contents |
 |---|---|
-| `paper2_ceus_submission_anonymous/` | Anonymous CEUS Paper 2 submission package |
-| `paper2_ceus_submission_anonymous/01_main_document_anonymous/` | Anonymous manuscript PDF and TEX |
-| `paper2_ceus_submission_anonymous/03_highlights/` | CEUS-style highlights |
-| `paper2_ceus_submission_anonymous/05_figures/` | Standalone manuscript figures |
-| `paper2_ceus_submission_anonymous/07_declarations_and_checks/` | Experiment audit scripts, logs, CSV/JSON outputs, and reviewer-facing checks |
-| `paper2_ceus_submission_anonymous/CEUS_paper2_latex_source_anonymous.zip` | Anonymous LaTeX source package |
-| `code/`, `data/`, `tables/`, `docs/` | Earlier NL2GeoSQL reproduction materials retained for continuity |
+| `code/eval/` | Offline analysis scripts (no LLM API needed) |
+| `code/prompts/` | The five prompt families used in the paper (`gemini`, `gemini-3.5-flash`, `deepseek`, `qwen`, `gemma`) plus shared `domain_facts.md` |
+| `data/benchmark/` | The 125-question CQ-125 benchmark (questions + gold SQL + metadata), the 40-question robustness split, and a `schema.sql` structure-only dump of the 11 PostGIS tables referenced by gold SQL (no row data — reproduction does not require a database) |
+| `data/results/` | Frozen `records_baseline.jsonl` and `records_full.jsonl` for every (family × sample) cell — 11 families × N=3 samples × 2 modes = 66 JSONL files |
+| `tables/build_tables.py` / `tables/verify_tables.py` | Legacy per-sample cross-family absolute-EX table gate retained for continuity |
+| `tables/build_codex_tables.py` / `tables/verify_codex_tables.py` | Revised manuscript checks: question-level majority vote followed by exact two-sided McNemar tests |
 
-## Important Files
+## One-command reproduction
 
-- Manuscript source: `paper2_ceus_submission_anonymous/01_main_document_anonymous/manuscript_ceus_anonymous.tex`
-- Manuscript PDF: `paper2_ceus_submission_anonymous/01_main_document_anonymous/manuscript_ceus_anonymous.pdf`
-- LaTeX source ZIP: `paper2_ceus_submission_anonymous/CEUS_paper2_latex_source_anonymous.zip`
-- No-reuse parity audit: `paper2_ceus_submission_anonymous/07_declarations_and_checks/MASKED_LOCAL_PARITY_AUDIT.md`
-- Two-step lookahead audit: `paper2_ceus_submission_anonymous/07_declarations_and_checks/TWO_STEP_LOOKAHEAD_LOCAL_AUDIT.md`
-- Budget sensitivity audit: `paper2_ceus_submission_anonymous/07_declarations_and_checks/BUDGET_RATIO_SENSITIVITY_AUDIT.md`
-- Fixed-policy DRL budget decoding audit: `paper2_ceus_submission_anonymous/07_declarations_and_checks/DRL_BUDGET_DECODING_AUDIT.md`
-- Figure generation audit: `paper2_ceus_submission_anonymous/07_declarations_and_checks/ceus_figure_generation_audit.json`
+```bash
+pip install -r requirements.txt   # ~5 packages, no LLM API, no PostgreSQL
+python tables/build_tables.py
+python tables/verify_tables.py    # exits 0 iff everything matches the paper
+python tables/build_codex_tables.py
+python tables/verify_codex_tables.py
+```
 
-## Double-Anonymous Boundary
+Expected last line: `OK: tables/built/table4.json matches tables/expected/table4.json (11 families)`.
+For the revised IJGIS manuscript, also expect:
+`OK: codex majority-vote headline checks match the revised manuscript`.
 
-This public repository contains only the anonymous review package. The following files are intentionally excluded:
+## Reproducing each paper table
 
-- author-identifying title page
-- cover letter
-- author contribution declaration with names
-- administrative checklist entries that reference author identity fields
+**Legacy cross-family absolute EX (per-sample mean, retained for continuity):**
+```bash
+python code/eval/cross_family_absolute_ex.py
+```
+The `# TeX-ready rows` block at the bottom is the verbatim `tabular` body
+used in an earlier draft.
 
-Those files remain only in the local submission workspace and should not be made reviewer-visible during double-anonymous review.
+**Legacy cross-family paired Δ + pooled/per-sample McNemar:**
+```bash
+python code/eval/cross_family_grounding_effect.py
+```
 
-## Full Reproducibility Boundary
+**Revised manuscript majority-vote headline checks:**
+```bash
+python tables/build_codex_tables.py
+python tables/verify_codex_tables.py
+```
 
-This repository stores the manuscript-facing anonymous package and audit artifacts. The manuscript data-availability statement points reviewers to the anonymised review archive for the full synthetic-data pipeline, trained models, paired-inference outputs, local-sweep outputs, generated figures, and related reproduction assets.
+This is the authoritative check for the revised IJGIS submission. It caps each
+cell at `N=3`, reduces repeated stochastic samples to one question-level
+majority vote, and then applies one exact two-sided McNemar test per subset.
 
-The committed audit outputs document the latest reported checks, including:
+**Legacy gemini-3.5-flash three-condition cells + paired Δ:**
+```bash
+python code/eval/three_factor_analysis.py
+```
 
-- 21-run contiguity-aware local sweep
-- 42-run no-reuse local parity audit
-- 9-run two-step local lookahead audit
-- 84-run local budget-sensitivity sweep
-- 120-run fixed-policy DRL budget-decoding sweep
-- 60-run prefix-horizon audit
+**Per-family deep-dive (failure-bin transitions, top categories, etc.):**
+```bash
+python code/eval/post_analysis.py \
+  --run-dir data/results/v7_d1d6_full_n3_2026-05-15_193934 \
+  --family deepseek-v4-flash
+```
 
-## Suggested GitHub About Text
+## Method summary (anchored to this code)
 
-Description:
+The paper studies the **grounding effect** on PostGIS NL2SQL: paired comparison
+of `records_baseline.jsonl` (no schema-aware grounding context, "cell A") against
+`records_full.jsonl` (with grounding context, "cell B") on the same 125
+questions. The revised manuscript uses a de-pooled statistical convention:
+question-level majority vote across `N=3` stochastic samples followed by one
+exact two-sided McNemar test on the per-question table. Under this convention,
+grounding improves the Robustness subset for all 11 families by point estimate,
+whereas Spatial effects are heterogeneous across families. The most negative
+cross-family panel estimate is `gemini-3.5-flash` on Spatial
+(`Δ=-10.59 pp`, `p=0.136`), so the paper treats it as a negative-tail
+observation rather than a confirmed stable family-level regression. A focused
+three-condition diagnostic on `gemini-3.5-flash` gives an unadjusted Spatial
+`B-A=-14.12 pp` (`b/c=21/9`, `p=0.043`) and Robustness `B-A=+32.50 pp`
+(`p=0.0002`).
 
-> Anonymous CEUS Paper 2 package: cadastral parcel DRL benchmark showing exact-delta local diagnostics can beat Maskable PPO in low-intervention regimes.
+For the analysis tools cited in the paper:
+* `tables/build_codex_tables.py` — revised majority-vote reductions used for
+  the current IJGIS submission.
+* `tables/verify_codex_tables.py` — checks the current manuscript's headline
+  values (`-10.59`, `-14.12`, `+32.50`, `+8.24`, and related p-values).
+* `cross_family_absolute_ex.py`, `cross_family_grounding_effect.py`, and
+  `three_factor_analysis.py` — legacy per-sample/pooled diagnostics retained
+  for auditability and comparison with earlier drafts.
+* `post_analysis.py` — full per-family report including failure-bin
+  transitions, top-category Δ, and unknown-bin sub-classification.
 
-Suggested topics:
+## Data layout (read by all scripts)
 
-`deep-reinforcement-learning`, `spatial-optimization`, `land-use-planning`, `cadastral-parcels`, `synthetic-data`, `maskable-ppo`, `reproducibility`, `ceus`
+```
+data/results/<run-dir>/<family>/sample_<N>/records_<mode>.jsonl
+                                                   └── baseline | full
+```
+
+Each JSONL line is one (qid, family, sample, mode) evaluation, with fields
+documented in `docs/REPRODUCE.md`. `mode == "baseline"` is the no-grounding
+condition (cell A); `mode == "full"` is the grounding condition (cell B). The
+analysis pipeline never re-invokes any LLM — all reduction is from these
+frozen outputs.
+
+## Why no LLM API is needed
+
+The 11 LLMs were sampled at evaluation time and their outputs frozen in the
+JSONL files committed here. Every paper number is a deterministic reduction
+over these JSONL — `verify_tables.py` exits non-zero if any reduction drifts.
+This makes the published claim falsifiable in the strict sense: if a reviewer
+re-runs `verify_tables.py` and it reports anything other than `OK`, the paper
+is wrong. Re-evaluating the LLMs themselves (i.e. drawing fresh samples) is
+out of scope for reproduction.
+
+## License
+
+Code: MIT (`LICENSE`).
+Data and benchmark: CC-BY 4.0.
+
+## Citation
+
+Will be added on acceptance. For now, please cite the IJGIS submission DOI
+(in the abstract metadata of the submission system).
+
+## Anonymity statement
+
+This repository is published anonymously for double-blind peer review. The
+authors will append their identities, ORCIDs, and institutional affiliations
+on acceptance. Please do not de-anonymize via repository ownership inspection
+during review.
+
+> **Note on LLM-hallucinated absolute paths.** A small number of `pred_sql`
+> fields in `data/results/` contain LLM-generated absolute filesystem paths
+> (e.g. `D:/adk/...` references inside `pg_read_file(...)` calls). These are
+> faithful records of model output during evaluation and reflect the
+> evaluator's filesystem at evaluation time. They do not affect any reduction
+> in the analysis pipeline (the queries fail with `permission denied`
+> regardless of path), and are preserved verbatim rather than scrubbed,
+> because the integrity of frozen LLM outputs is a stronger reproducibility
+> guarantee than aesthetic anonymisation. The path string contains no author
+> or institutional identifiers.
