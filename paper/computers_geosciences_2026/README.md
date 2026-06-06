@@ -9,8 +9,12 @@ Computers & Geosciences submission.
 - `02_supplementary_material.pdf` — supplementary material.
 - `latex_source/` — LaTeX source files and source result tables used to build
   the manuscript and supplement.
-- `latex_source_computers_geosciences.zip` — zip archive of the same anonymous
-  LaTeX source package.
+- `latex_source_computers_geosciences.zip` — zip archive of the same LaTeX
+  source package.
+- `figures/` — rendered Gemma4 host228 scale-sweep figure in PDF, PNG, and SVG
+  formats, plus the Python plotting script.
+- `gemma4_host228_scale_sweep_summary.csv` — source table for the Gemma4
+  host228 scale-sweep figure, also mirrored inside `latex_source/`.
 
 The cover letter is intentionally excluded from this reproduction repository
 because it is submission correspondence rather than a reproducibility artefact.
