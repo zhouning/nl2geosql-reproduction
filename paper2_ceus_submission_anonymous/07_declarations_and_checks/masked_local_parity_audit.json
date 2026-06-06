@@ -1,0 +1,30 @@
+{
+  "regions": [
+    "A",
+    "B",
+    "C"
+  ],
+  "lambdas": [
+    0.0,
+    0.25,
+    0.5,
+    1.0,
+    2.0,
+    4.0,
+    8.0
+  ],
+  "budget_pairs": 100,
+  "n_rows": 42,
+  "elapsed_seconds": 277.62211441993713,
+  "outputs": {
+    "full": "D:\\test\\paper2_v2\\v4_artifacts\\masked_local_parity.csv",
+    "summary": "D:\\test\\paper2_v2\\v4_artifacts\\masked_local_parity_summary.csv"
+  },
+  "dominance": {
+    "total_drl_mean_outcomes": 6,
+    "total_drl_mean_outcomes_dominated": 6,
+    "total_individual_drl_runs": 30,
+    "total_individual_drl_runs_dominated": 24
+  },
+  "boundary": "No-reuse local ranking matches the DRL episode-level converted-parcel constraint but remains a deterministic exact-delta diagnostic, not a globally optimized planner."
+}

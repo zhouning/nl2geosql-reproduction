@@ -1,0 +1,5 @@
+Open synthetic-cadastral benchmark tests DRL on irregular land parcels.
+Exact-delta Greedy beats Maskable PPO on slope in all tested regions.
+DRL preserves parcel contiguity, revealing a multi-objective tradeoff.
+Stochastic decoding explains part, not all, of deterministic DRL failure.
+Results guide when land-use decision support should prefer local ranking.

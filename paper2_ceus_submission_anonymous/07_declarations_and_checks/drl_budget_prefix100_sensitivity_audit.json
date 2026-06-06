@@ -1,0 +1,32 @@
+{
+  "budgets": [
+    25,
+    50
+  ],
+  "regions": [
+    "A",
+    "B",
+    "C"
+  ],
+  "methods": [
+    "lagrangian",
+    "entonly"
+  ],
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "n_rows": 60,
+  "n_ok": 60,
+  "horizon_pairs": 100,
+  "output_tag": "drl_budget_prefix100",
+  "outputs": {
+    "full": "D:\\test\\paper2_v2\\v4_artifacts\\drl_budget_prefix100_sensitivity.csv",
+    "method_summary": "D:\\test\\paper2_v2\\v4_artifacts\\drl_budget_prefix100_summary.csv",
+    "comparison": "D:\\test\\paper2_v2\\v4_artifacts\\drl_budget_prefix100_vs_local.csv"
+  },
+  "boundary": "Already-trained policies decoded at alternative budgets; no DRL retraining."
+}

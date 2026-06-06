@@ -1,0 +1,17 @@
+{
+  "experiment": "two-step lookahead local search",
+  "lambdas": [
+    0.0,
+    0.5,
+    1.0
+  ],
+  "regions": [
+    "A",
+    "B",
+    "C"
+  ],
+  "top_k": 5,
+  "n_pairs": 100,
+  "full_output": "D:\\test\\paper2_v2\\v4_artifacts\\two_step_lookahead_local.csv",
+  "summary_output": "D:\\test\\paper2_v2\\v4_artifacts\\two_step_lookahead_summary.csv"
+}
