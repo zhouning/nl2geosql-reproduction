@@ -1,8 +1,8 @@
 """Verify the v7_codex majority-vote headline numbers.
 
 The older ``verify_tables.py`` intentionally preserves the submitted legacy
-per-sample Table 4 gate. This verifier checks the revised IJGIS manuscript's
-question-level majority-vote McNemar convention.
+per-sample Table 4 gate. This verifier checks the revised Computers &
+Geosciences manuscript's question-level majority-vote McNemar convention.
 """
 from __future__ import annotations
 
@@ -22,16 +22,18 @@ BUILT = REPO / "tables" / "built" / "codex_majority_vote.json"
 TOL = 0.01
 
 EXPECTED = {
-    ("focused_three_condition", "spatial", "B_minus_A", "delta"): -14.12,
-    ("focused_three_condition", "spatial", "B_minus_A", "p"): 0.0428,
-    ("focused_three_condition", "spatial", "B_minus_A", "b"): 21,
-    ("focused_three_condition", "spatial", "B_minus_A", "c"): 9,
-    ("focused_three_condition", "robust", "B_minus_A", "delta"): 32.50,
-    ("focused_three_condition", "robust", "B_minus_A", "p"): 0.0002,
+    ("focused_three_condition", "overall", "B_minus_A", "delta"): 1.60,
+    ("focused_three_condition", "overall", "B_minus_A", "p"): 0.8746,
+    ("focused_three_condition", "spatial", "B_minus_A", "delta"): -10.59,
+    ("focused_three_condition", "spatial", "B_minus_A", "p"): 0.1360,
+    ("focused_three_condition", "spatial", "B_minus_A", "b"): 19,
+    ("focused_three_condition", "spatial", "B_minus_A", "c"): 10,
+    ("focused_three_condition", "robust", "B_minus_A", "delta"): 27.50,
+    ("focused_three_condition", "robust", "B_minus_A", "p"): 0.0010,
     ("focused_three_condition", "spatial", "C_minus_B", "delta"): 8.24,
-    ("focused_three_condition", "spatial", "C_minus_B", "p"): 0.0923,
-    ("focused_three_condition", "spatial", "C_minus_A", "delta"): -5.88,
-    ("focused_three_condition", "spatial", "C_minus_A", "p"): 0.4244,
+    ("focused_three_condition", "spatial", "C_minus_B", "p"): 0.0654,
+    ("focused_three_condition", "spatial", "C_minus_A", "delta"): -2.35,
+    ("focused_three_condition", "spatial", "C_minus_A", "p"): 0.8388,
     ("cross_family", "gemini-3.5-flash", "spatial", "delta"): -10.59,
     ("cross_family", "gemini-3.5-flash", "spatial", "p"): 0.1360,
     ("cross_family", "deepseek-v4-flash", "spatial", "delta"): 23.53,

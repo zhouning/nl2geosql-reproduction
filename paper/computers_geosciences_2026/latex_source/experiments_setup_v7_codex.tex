@@ -1,0 +1,53 @@
+% Content of §4 Experimental Setup: section header is in the master file.
+
+\subsection{Experimental setup}
+
+\noindent\textbf{Evaluation protocols.} The primary analysis in this manuscript is the CQ-125 grounding-effect study in \S\ref{sec:gisr}. It compares two prompt conditions, no-grounding (A) and grounding-only (B), across 11 LLM families using $N{=}3$ paired samples per family and question-level majority-vote McNemar tests. A focused \texttt{gemini-3.5-flash} diagnostic adds a third condition, grounding plus minimal-modification rules (C), again truncated to $N{=}3$ for matched A/B/C comparison.
+
+The framework-level results in \S\ref{sec:baseline-results} use a separate evaluation protocol and are reported as supporting context rather than as the primary claim. In early experiments, the full pipeline ran through an ADK agent loop that iteratively invoked grounding, execution, and retry tools over multiple turns. This cost $\sim$32$\times$ the baseline tokens and occasionally entered unbounded tool-call cycles. We therefore also implement a deterministic \emph{single-pass} pipeline: (1)~build the grounding context locally (intent classification, semantic resolution, prompt assembly, no LLM call); (2)~make a single LLM call to generate SQL; (3)~postprocess (safety check, identifier quoting, LIMIT injection) and execute; on failure, retry with a fast corrective LLM call (up to $T=2$). Single-pass mode reduced BIRD token cost from $\sim$32$\times$ to $7.9\times$ and improved design-set EX. BIRD results below use single-pass; the earlier GIS framework headline uses the agent loop and is separated from the cross-family grounding-effect analysis.
+
+We also include a supporting Gemma4 model-size sweep on the same local Ollama serving node (host228). This sweep evaluates five Gemma4 parameter scales (\texttt{e2b}, \texttt{e4b}, \texttt{12b}, \texttt{26b}, and \texttt{31b}) on CQ-125 under the same baseline-vs-full framework configurations and records wall-clock runtime. It is a single-host engineering probe, not part of the $N{=}3$ majority-vote McNemar panel in \S\ref{sec:gisr}; accordingly, we use it only to document a practical accuracy--runtime trade-off. The source-table summary is distributed with the manuscript source and is excluded from the primary statistical reductions.
+
+\medskip
+\noindent\textbf{Benchmarks.} We evaluate under three tracks. The \emph{GIS track} has 125 questions (85 Spatial with three difficulty levels covering selection, overlap, buffering, spatial aggregation, topology, and KNN; plus 40 Robustness covering six categories: Security Rejection, Anti-Illusion, Schema Hallucination, Schema Enforcement, Data Tampering Prevention, OOM Prevention). The \emph{BIRD track} uses BIRD mini\_dev~\citep{li2023bird} with a 108-question \emph{design set} (used to derive grounding rules by error attribution) and a disjoint 150-question \emph{held-out set} sampled from the remaining BIRD mini\_dev PostgreSQL items with proportional difficulty stratification. The \emph{cross-lingual track} has 50 Chinese-translated BIRD questions (drawn from the 108 design) plus 50 native Chinese GIS questions.
+
+For external-benchmark readiness, we also ported FloodSQL-Bench~\citep{liu2025floodsql} to a local PostgreSQL/PostGIS schema. The local port contains 443 benchmark questions over 10 flood-risk, social-vulnerability, infrastructure, and boundary tables; 18 questions are reserved as few-shot examples by the runner. A single-sample stratified smoke evaluation (25 questions per L0--L5 level, 150 questions total) with \texttt{gemini-2.5-flash} produced identical baseline and full EX (65/150, 43.3\%). We report this only as an external harness-readiness audit. It is not used as evidence for generalisation because it is a single-family, single-sample, partial-benchmark run.
+
+\begin{table}[t]
+\centering
+\footnotesize
+\caption{CQ-125 Spatial-subset profile. Predicate families may overlap because one question can require more than one spatial operation. The 40-question Robustness subset is reported separately.}
+\label{tab:cq-profile}
+\input{table_benchmark_profile.tex}
+\end{table}
+
+We use execution accuracy (EX) as the primary metric: a prediction is correct if and only if its result set matches the gold SQL under set-equality with numeric tolerance. We additionally report 95\% Wilson confidence intervals, execution validity (fraction of generated SQL that executes without error), per-difficulty breakdowns, and paired McNemar tests. For repeated stochastic LLM samples in \S\ref{sec:gisr}, the unit of inference is the question: we first take majority vote across the $N=3$ samples for each condition and question, then run one exact two-sided McNemar test on the resulting paired per-question table. We do not pool repeated samples as independent observations.
+
+\paragraph{Execution accuracy evaluator.}
+EX compares the result set of predicted SQL against gold SQL under the
+following rules:
+(i)~\emph{row order} is ignored via set comparison of normalised tuples;
+(ii)~\emph{column order} follows the SELECT-list positional order and is
+significant --- permuted columns are counted as errors;
+(iii)~\emph{numeric tolerance}: two values match when
+$|a-b| \le 10^{-3}$ (absolute) or $|a-b| / \max(|a|,|b|) \le 10^{-3}$
+(relative);
+(iv)~\emph{NULL comparison}: NULL equals NULL, and NULL differs from any
+other value;
+(v)~\emph{floats} are rounded to three decimal places before set
+comparison, to damp SQL-engine-specific rounding;
+(vi)~\emph{LIMIT}: if the gold specifies \texttt{LIMIT}~$N$, the predicted
+result is treated as-is and the comparison is applied over at most $N$ rows;
+(vii)~\emph{duplicate rows} (multiplicity) are preserved --- set-equality
+is multiset-equality, not distinct-row equality.
+The evaluator is a single Python function (\texttt{compare\_results()}) in
+the companion repository; all 85 Spatial questions produced by gold SQL
+return at most 10\,000 rows, keeping evaluator cost bounded.
+
+For the framework-level tracks, we compare two pipeline configurations:
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Baseline}: direct LLM generation (Gemini~2.5~Flash) with schema dump only, no semantic grounding.
+  \item \textbf{Full pipeline}: full NL2Semantic2SQL with semantic-layer resolution, geometry-aware grounding, value-aware hints, postprocessing, and execution-time self-correction (single-pass on BIRD, agent-loop on GIS).
+\end{itemize}
+
+We additionally compare against \textbf{DIN-SQL}~\citep{pourreza2023dinsql} as an external prompting baseline on the framework-level tracks. These supporting configurations share the same database backend and execution-comparison harness. The cross-family grounding-effect study in \S\ref{sec:gisr} varies the LLM family by design and keeps the A/B prompt conditions, benchmark, evaluator, and question-level test convention fixed. Experimental configurations are detailed in Supplement~S1.

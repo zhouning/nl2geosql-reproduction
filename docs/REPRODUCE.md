@@ -1,6 +1,6 @@
 # Reproduction guide
 
-This document walks through reproducing the IJGIS submission analyses. The
+This document walks through reproducing the Computers & Geosciences submission analyses. The
 total runtime on a 2020-era laptop is **under 90 seconds**; no GPU, no
 PostgreSQL, no LLM API key, and no network access is required.
 
@@ -33,7 +33,7 @@ python tables/verify_codex_tables.py
 If `verify_tables.py` exits 0, the legacy per-sample cross-family absolute-EX
 table is reproduced bit-exact (to 0.01 pp) from the frozen JSONL. If
 `verify_codex_tables.py` exits 0, the revised manuscript's majority-vote
-headline checks match the current IJGIS submission.
+headline checks match the current Computers & Geosciences submission.
 
 ## Reproducing each table
 
@@ -44,13 +44,14 @@ python tables/build_codex_tables.py
 python tables/verify_codex_tables.py
 ```
 
-This is the authoritative check for the revised IJGIS submission. It uses
-uniform `N=3`, computes a majority-vote execution outcome per question, and then
-uses one exact two-sided McNemar test on the per-question table. The verifier
-checks the current headline values, including `gemini-3.5-flash` Spatial panel
-`Δ=-10.59 pp, p=0.136`, focused Spatial `B-A=-14.12 pp, b/c=21/9, p=0.043`,
-focused Robustness `B-A=+32.50 pp, p=0.0002`, and mini-mod Spatial
-`C-B=+8.24 pp, p=0.092`.
+This is the authoritative check for the revised Computers & Geosciences
+submission. It uses `N=3` for the 11-family cross-family panel and balanced
+`N=5` for the focused `gemini-3.5-flash` A/B/C diagnostic. Both analyses compute
+a majority-vote execution outcome per question and then use one exact two-sided
+McNemar test on the per-question table. The verifier checks the current headline
+values, including the `gemini-3.5-flash` Spatial panel `Δ=-10.59 pp, p=0.136`,
+focused Spatial `B-A=-10.59 pp, b/c=19/10, p=0.136`, focused Robustness
+`B-A=+27.50 pp, p=0.0010`, and mini-mod Spatial `C-B=+8.24 pp, p=0.0654`.
 
 ### Legacy Table 4 — cross-family absolute EX (11 families × 2 subsets)
 
@@ -76,15 +77,15 @@ The output covers every subset (Overall, Robust, Spatial, Easy, Medium, Hard)
 for every family under an earlier pooled/per-sample convention. It is kept as a
 diagnostic, not as the revised manuscript's primary inferential convention.
 
-### Legacy three-factor decomposition (gemini-3.5-flash only)
+### Diagnostic three-factor decomposition (gemini-3.5-flash only)
 
 ```bash
 python code/eval/three_factor_analysis.py
 ```
 
-Cell A (no grounding) and cell C (grounding + mini-mod) are at N=5; cell B
-(grounding only, no mini-mod) is at N=3. The revised manuscript caps A and C to
-`N=3` for symmetry; use `tables/build_codex_tables.py` for that convention.
+Cells A (no grounding), B (grounding only), and C (grounding + mini-mod) are now
+all available at `N=5`. Use `tables/build_codex_tables.py` for the current
+question-level majority-vote convention used in the manuscript.
 Output includes:
 * Per-cell EX on Overall / Robustness / Spatial / Easy / Medium / Hard
 * Top-category breakdown
@@ -164,13 +165,16 @@ data/results/v7_qwen37max_n3_2026-05-22_095715/
 
 data/results/v7_gemini35_recheck_n3_2026-05-22_095253/
    └── gemini-3.5-flash/sample_{1,2,3}/records_{baseline,full}.jsonl
+   └── gemini-3.5-flash/sample_{4,5}/records_full.jsonl
+       (source for focused cell B, grounding only, N=5)
 
 data/results/v7_gemini35_minimod_n3_20260524/
    └── gemini-3.5-flash/sample_{1..5}/records_{baseline,full}.jsonl
-       (source for cell A and cell C; revised checks cap these to N=3)
+       (source for focused cell A and cell C, N=5)
 ```
 
-The N=3 vs N=5 asymmetry is described in the Limitations section of the paper.
+The cross-family panel remains `N=3` for comparability across all 11 families;
+the focused `gemini-3.5-flash` A/B/C diagnostic is balanced at `N=5`.
 
 ## Troubleshooting
 

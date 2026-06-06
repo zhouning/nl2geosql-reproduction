@@ -1,0 +1,121 @@
+% Content of §3 Method: section header is in the master file.
+
+\subsection{Formal scope: semantic layer as metadata graph \texorpdfstring{$G=(V,E)$}{G=(V,E)}}
+\label{sec:formal-scope}
+
+We formalise the semantic layer as a directed multigraph $G = (V, E)$ that encodes the executable subset of OGC Simple Feature Access~\citep{ogcsfs} required for PostGIS grounding. $V = E_{geo} \cup D \cup M \cup I \cup P \cup C$ where $E_{geo}$ are geographic-entity (PostGIS table) vertices with attributes (geometry column, SRID, geometry type); $D, M$ are dimension/measure vertices for the warehouse track; $I$ are intent tags (\texttt{attribute\_filter}, \texttt{aggregation}, \texttt{spatial\_join}, \texttt{spatial\_measurement}, \texttt{knn}, \texttt{preview\_listing}); $P$ are OGC SFA predicate vertices partitioned into topological, metric, and KNN classes; $C$ are constraint vertices for SRID ranges, unit rules, and safety/refusal. $E$ comprises $E_{hasGeom}, E_{fk}, E_{topo}, E_{metric}, E_{knn}, E_{route}, E_{safety}, E_{unit}$ (table--geometry, foreign keys, predicate--entity edges, intent$\to$predicate routing, refusal edges, and SRID range$\to$required cast$\to$yielded unit chains). Algorithm~\ref{alg:build-graph} materialises $G$ at agent startup from the live PostGIS catalog. $G$ is an \emph{executable subset} of the OGC SFA predicate taxonomy, not a complete geospatial ontology; full GeoSPARQL/ISO~19107 alignment is future work, and Table~\ref{tab:alignment} documents the rule-level mapping we currently enforce.
+
+\begin{algorithm}[t]
+\caption{\textsc{BuildSemanticGraph}($\mathit{schema}, \mathit{prefix}$)}
+\label{alg:build-graph}
+\begin{algorithmic}[1]
+\STATE $G \gets$ empty multigraph
+\FOR{$(t, c, \mathit{srid}, \tau) \in$ \texttt{geometry\_columns}}
+  \IF{$t$ starts with $\mathit{prefix}$ and $\mathit{srid} \neq 0$}
+    \STATE add GEO\_ENTITY vertex $(t, c, \mathit{srid}, \tau)$
+  \ENDIF
+\ENDFOR
+\FOR{$(t_s, t_t) \in$ \texttt{key\_column\_usage}}
+  \STATE add edge $(t_s \to t_t, \text{FK})$
+\ENDFOR
+\STATE register topological / metric / KNN predicate vertices (OGC SFA 06-104r4)
+\STATE register intent vertices; route intents $\to$ predicate classes
+\STATE register unit-rule edges: metric $\to$ SRID range $\to$ required cast
+\RETURN $G$
+\end{algorithmic}
+\end{algorithm}
+
+\begin{table}[t]
+\centering\footnotesize
+\caption{Alignment of semantic-layer rules to OGC SFA~\citep{ogcsfs}, ISO 19107~\citep{iso19107} clauses, and PostGIS functions~\citep{postgis}. Rule-level mapping; each enforced rule traces to a specific clause.}
+\label{tab:alignment}
+{\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}lllll@{}}
+\toprule
+Rule & Edge class & OGC 06-104r4 clause & ISO 19107 clause & PostGIS \\
+\midrule
+\texttt{R\_topo\_intersects} & $E_{topo}$ & \S 6.1.2.3 (Relate)   & \S 6.2.2 & \texttt{ST\_Intersects} \\
+\texttt{R\_topo\_contains}   & $E_{topo}$ & \S 6.1.2.3 (Relate)   & \S 6.2.2 & \texttt{ST\_Contains} \\
+\texttt{R\_topo\_within}     & $E_{topo}$ & \S 6.1.2.3 (Relate)   & \S 6.2.2 & \texttt{ST\_Within} \\
+\texttt{R\_metric\_length\_geog}   & $E_{unit}$ & \S 6.1.2.3 (Length) + \S 8.2.3 & \S 6.4.14 & \texttt{ST\_Length(geog)} \\
+\texttt{R\_metric\_area\_geog}     & $E_{unit}$ & \S 6.1.2.3 (Area) + \S 8.2.3   & \S 6.4.15 & \texttt{ST\_Area(geog)} \\
+\texttt{R\_metric\_dwithin\_geog}  & $E_{unit}$ & \S 6.1.2.3 (Distance) + \S 8.2.3 & \S 6.4.10 & \texttt{ST\_DWithin(geog)} \\
+\texttt{R\_knn\_nearest}     & $E_{knn}$  & \S 6.1.2.3 (Distance) & \S 6.4.10 & \texttt{<->} KNN \\
+\texttt{R\_safety\_refusal}  & $E_{safety}$ & not in OGC & --- & postprocessor AST \\
+\texttt{R\_safety\_bounded}  & $E_{safety}$ & not in OGC & --- & \texttt{LIMIT} injection \\
+\bottomrule
+\end{tabular}
+}
+\end{table}
+
+\subsection{Problem formulation}
+
+We formulate cross-domain natural language to SQL as the task of translating a user question $q$ into an executable SQL statement $s$ over heterogeneous structured databases that may belong to either geospatial or conventional warehouse domains. Let $S$ denote the executable schema representation extracted from the database catalog, and let $E$ denote semantic-side evidence such as aliases, hierarchy expansions, geometry metadata, value hints, or fact/dimension/entity annotations. The problem can then be written abstractly as
+\begin{equation}
+  \hat{s} = f(q, S, E),
+\end{equation}
+where $f$ is implemented by an LLM-conditioned generation pipeline rather than a single end-to-end model. Unlike standard text-to-SQL settings, the target databases in our problem formulation are not assumed to share homogeneous operator semantics. In warehouse-style databases, correct SQL generation primarily depends on schema linking, join reasoning, aggregation, and temporal filtering. In geospatial databases, however, the model must additionally reason about geometry-bearing columns, spatial relations, coordinate systems, and domain-specific operators such as intersection, containment, buffering, and area or distance calculation. The purpose of our framework is therefore not only to generate valid SQL, but also to provide a semantic mediation layer that adapts the grounding process to the structural characteristics of each domain.
+
+\subsection{Three-stage pipeline}
+
+We design NL2Semantic2SQL as a three-stage pipeline (Figure~\ref{fig:arch}). In the first stage, the system performs semantic resolution over a semantic layer that stores table-level and column-level annotations, aliases, domain hints, and task-relevant metadata. In the second stage, the resolved information is combined with database schema inspection and optional few-shot retrieval to construct a grounded context block for SQL generation. In the third stage, the generated SQL is postprocessed, executed under safety constraints, and, when necessary, revised through an execution-feedback self-correction loop. This decomposition separates semantic interpretation from SQL synthesis, allowing the framework to expose domain-specific evidence to the language model while keeping the final generation step constrained by executable schema information.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[
+  node distance=8mm and 8mm,
+  every node/.style={font=\small},
+  stage/.style={draw, rounded corners=2pt, minimum width=26mm, minimum height=10mm, align=center, fill=gray!10, font=\scriptsize},
+  block/.style={draw, rounded corners=2pt, minimum width=26mm, minimum height=8mm, align=center, fill=blue!7, font=\scriptsize},
+  io/.style={draw, rounded corners=2pt, minimum width=18mm, minimum height=8mm, align=center, fill=orange!12, font=\scriptsize},
+  arrow/.style={-{Stealth[length=2mm]}, thick}
+]
+\node[io]    (q)    {NL question $q$};
+\node[stage] (s1) [right=of q]   {S1: Semantic \\ resolution};
+\node[stage] (s2) [right=of s1]  {S2: Grounded \\ context};
+\node[stage] (s3) [right=of s2]  {S3: SQL synth.\ \\ + correction};
+\node[io]    (sql) [right=of s3] {Exec.\ SQL};
+
+\node[block] (b1) [below=of s1] {Aliases / hierarchy / \\ MetricFlow models};
+\node[block] (b2) [below=of s2] {Schema dump + sampled values \\ + optional few-shot};
+\node[block] (b3) [below=of s3] {Safety postprocessor + \\ execute + retry};
+
+\draw[arrow] (q)  -- (s1);
+\draw[arrow] (s1) -- (s2);
+\draw[arrow] (s2) -- (s3);
+\draw[arrow] (s3) -- (sql);
+\draw[arrow] (b1) -- (s1);
+\draw[arrow] (b2) -- (s2);
+\draw[arrow] (b3) -- (s3);
+\draw[arrow, dashed] (sql.south) .. controls +(0,-9mm) and +(0,-9mm) .. node[below, font=\scriptsize]{execution feedback (self-correction)} (b3.south);
+\end{tikzpicture}
+\caption{Architecture of NL2Semantic2SQL: Stage~1 semantic resolution, Stage~2 grounded-context assembly, Stage~3 SQL synthesis with postprocessor and self-correction.}
+\label{fig:arch}
+\end{figure}
+
+\subsection{Geospatial-aware grounding and bilingual routing}
+
+The framework's geospatial path explicitly identifies geometry columns, geometry types, and spatial reference information, and injects operator-level rules into the grounding context. These rules distinguish topological from metric predicates and specify when area or distance calculations require coordinate transformation or geography casting, reducing the burden on the language model to infer execution constraints from raw schema text. When spatial signals are absent, the framework falls back to generic schema linking and aggregation-oriented prompt construction. Routing between these paths is driven by a bilingual intent classifier that recognises Chinese GIS keywords (spatial operator terms, Chinese administrative region names, Chinese measurement units) alongside English warehouse expressions (``how many'', ``average'', ``compare''). In real-world deployments GIS analysts often query in Chinese while warehouse analysts use English, and a single interface must handle both without language-specific model swapping; bilingual routing is therefore a first-class design choice rather than an afterthought.
+
+\subsection{Warehouse-side enhancements}
+
+For non-geospatial warehouse queries, the framework adds three domain-adaptive enhancements. \emph{Cross-domain candidate ranking} reprioritises sources based on whether the parsed semantic context contains spatial operators or region filters; when such signals are absent, geometry-bearing tables are deprioritised and tables with matched column evidence are boosted. \emph{Value-aware grounding} injects sample distinct values from low-cardinality text columns so that the model can use exact categorical values rather than hallucinated strings. \emph{MetricFlow-style fact/dimension modelling} stores per-table roles, entity columns (primary or foreign join keys), and measure columns in a semantic-model registry; at grounding time, candidate tables are matched against this registry and explicit join-path hints are derived by aligning shared entities across fact/dimension pairs. These hints are injected only for non-spatial queries, leaving the GIS path unchanged.
+
+\subsection{Execution-time self-correction}
+
+After SQL generation, the system applies a postprocessor that rejects write operations, repairs casing/quoting errors, injects query constraints when necessary, and executes the resulting SQL in a read-only transaction. If execution fails, the framework enters a bounded self-correction loop. Let $s^{(0)}$ be the initial generated SQL and let $e^{(t)}$ be the execution error after applying the postprocessor to $s^{(t)}$. The retry policy is:
+\begin{equation}
+  s^{(t+1)} = g\big(q, s^{(t)}, e^{(t)}, S\big), \quad t = 0,1,\dots,T-1,
+\end{equation}
+where $g$ is a fast corrective LLM call and $T$ is the maximum retry count (in our implementation, $T=2$). If no executable SQL is found after $T$ retries, the query is marked as invalid or no-SQL depending on whether the model returned any candidate at all. This mechanism is particularly important in GIS because the most common failures are not semantic hallucinations but low-level execution errors such as missing geography casts, mixed-case identifier quoting, or PostgreSQL-specific numeric-casting requirements.
+
+\subsection{Worked example: end-to-end PostGIS grounding}
+\label{sec:worked-example}
+
+A worked example tracing a Chongqing benchmark question (length-of-one-way-roads in km) through every pipeline stage --- including the \texttt{::geography} cast injected by Stage~2, the unit-conversion rule, the postprocessor's row-shape sanity check, and the resulting execution-based match against the gold SQL --- is provided in Supplement~S2. Three implementation artefacts support the flow: a per-database YAML semantic layer (table aliases, geometry columns with SRID, rule identifiers); a small intent-rule set (\texttt{attribute\_filter}, \texttt{aggregation}, \texttt{spatial\_join}, \texttt{spatial\_measurement}, \texttt{knn}, \texttt{preview\_listing}, each associated with a minimal set of prompt-side rules); and the postprocessor (write-node rejection, identifier repair against the real schema, large-table \texttt{LIMIT} injection, the execution-time retry loop above). The anonymised companion repository releases minimal versions of all three.
+
+\subsection{Multi-track evaluation protocol}
+
+Evaluation is performed on three benchmark tracks. The geospatial track uses the 125-question GIS benchmark (85 Spatial + 40 Robustness), covering spatial selection, overlap analysis, metric distance queries, buffering, spatial aggregation, and a dedicated robustness suite that probes refusal behaviour on dangerous, illusory, schema-mismatched, and out-of-memory requests. The warehouse track uses BIRD mini\_dev~\citep{li2023bird} with two disjoint subsets: a 108-question design set and a 150-question independent held-out set, both evaluated in single-pass mode. The cross-lingual track pairs 50 Chinese-translated BIRD questions with 50 native-Chinese GIS questions. For all tracks we use execution accuracy (EX) as the primary metric: a prediction is correct if and only if its execution result set matches the gold SQL under set-equality with numeric tolerance. We additionally report 95\% Wilson confidence intervals, execution validity, per-difficulty breakdowns, paired McNemar tests (two-sided exact binomial), and token cost. Concrete sample sizes and the construction of each track are described in Section~\ref{sec:experiments}.
+
+% =============================================================================

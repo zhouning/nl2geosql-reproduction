@@ -1,0 +1,245 @@
+% =============================================================================
+% Subset-Decomposed Evaluation of Schema-Aware Grounding in NL2GeoSQL
+% Computers & Geosciences submission -- manuscript with author details
+% =============================================================================
+\documentclass[11pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{times}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{enumitem}
+\usepackage{url}
+\usepackage[authoryear,round]{natbib}
+\usepackage[hidelinks]{hyperref}
+\usepackage{tikz}
+\usetikzlibrary{positioning,arrows.meta,shapes.geometric,fit,calc}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\setlength{\emergencystretch}{2em}
+
+\title{Schema-Aware Grounding Effects in PostGIS\\
+       Natural-Language-to-SQL: A Subset-Decomposed Evaluation Across Eleven LLMs}
+\author{Ning Zhou\\
+\textit{Beijing SuperMap Software Co., Ltd., Beijing, China}\\
+ORCID: \href{https://orcid.org/0009-0002-5647-7388}{0009-0002-5647-7388}\\
+Corresponding author: \href{mailto:zhouning1@supermap.com}{zhouning1@supermap.com}}
+\date{}
+
+\begin{document}
+\maketitle
+
+% =============================================================================
+\begin{abstract}
+% =============================================================================
+Natural-language interfaces to spatial databases increasingly use schema-aware
+grounding: prompt-side evidence about table aliases, geometry columns, spatial
+reference systems, PostGIS operators, value hints, and safety constraints. For
+computational geoscience applications, this is a spatial-database informatics
+problem rather than only a language-model benchmarking problem. We evaluate
+grounding as an intervention on CQ-125, a 125-question Chongqing PostGIS
+benchmark containing 85 spatial-query questions and 40 robustness questions,
+across 11 LLM families with $N{=}3$ paired samples per family. All paired tests
+use question-level majority vote across the stochastic samples followed by a
+single exact two-sided McNemar test, avoiding the pseudoreplication that results
+from treating $NQ$ repeated samples as independent observations. Grounding
+produces a subset-dependent pattern. On the Robustness subset, all 11
+families improve in point estimate ($+12.50$ to $+65.00$ pp; nine significant at
+$\alpha=0.05$, one marginal, one non-significant positive). On the Spatial
+subset, 7 families show significant positive gains ($+11.76$ to $+23.53$ pp), 2
+show marginal positive gains, and 2 show non-significant negative point
+estimates. The most negative panel estimate is \texttt{gemini-3.5-flash}
+($\Delta=-10.59$ pp, $p=0.136$), and a balanced $N{=}5$ focused check on the
+same family retains this negative but non-significant Spatial point estimate.
+We therefore make a bounded claim: subset
+decomposition and de-pooled paired testing are necessary for defensible
+grounding-effect evaluation in geospatial NL2SQL; cross-family effects are
+heterogeneous; and the observed negative tail requires out-of-benchmark
+replication before it can be treated as a stable model-family property.
+\end{abstract}
+
+\noindent\textbf{Keywords:} NL2GeoSQL; PostGIS; semantic grounding; spatial-SQL execution accuracy; LLM evaluation; subset analysis; paired statistical testing; large language model.
+
+% =============================================================================
+\section{Introduction}
+\label{sec:intro}
+% =============================================================================
+
+Natural language access to spatial databases is a long-standing GIScience problem~\citep{goodchild1992gis,egenhofer1991topological,clementini1993small}. Recent large language models have advanced general text-to-SQL on benchmarks such as Spider~\citep{yu2018spider} and BIRD~\citep{li2023bird}; PostGIS-based NL2GeoSQL adds the OGC Simple Feature Access predicates~\citep{ogcsfs}, coordinate-reference-system transformations, the \texttt{geometry}/\texttt{geography} type distinction, KNN operators, and the safety constraints any production GIS must enforce~\citep{postgis}. These requirements make geospatial text-to-SQL a GIScience problem as well as a language-model problem: the system must translate geographic concepts into executable spatial predicates while preserving units, coordinate reference assumptions, result shape, and read-only behaviour.
+
+The standard engineering response is \emph{schema-aware grounding}: an upstream stage that injects table aliases, value enumerations, geometry-type metadata, SRID flags, large-table boundedness rules, and PostGIS dialect cues into the LLM prompt. Grounding is often evaluated as a single positive intervention, but this aggregate view is too coarse for mixed geospatial benchmarks. A benchmark that combines ordinary spatial queries with robustness cases is not testing one homogeneous capability. Spatial questions reward precise predicate choice, join structure, geometry measurement, and output-shape control; robustness questions reward refusal, schema enforcement, and bounded execution. The same grounding context can therefore interact differently with each subset.
+
+This paper evaluates that interaction on CQ-125, a 125-question Chongqing PostGIS benchmark containing 85 spatial-query questions and 40 robustness questions. Across 11 LLM families at $N{=}3$ paired samples per family, grounding has uniformly positive point estimates on Robustness ($+12.50$ to $+65.00$ pp). On Spatial, however, effects are heterogeneous: seven families improve significantly, two are marginal positive, and two have non-significant negative point estimates. The most negative panel estimate is \texttt{gemini-3.5-flash} ($-10.59$ pp, $p=0.136$). A balanced $N{=}5$ three-condition analysis on the same family, using no-grounding, grounding-only, and grounding plus a minimal prompt patch, retains the same Spatial grounding-only point estimate ($-10.59$ pp, $b/c=19/10$, $p=0.136$) and a large Robustness gain ($+27.50$ pp, $p=0.001$). The stable conclusion is therefore not that grounding generally hurts. It is that grounding effects are subset-conditional and family-conditional, and that aggregate execution accuracy can hide the interaction.
+
+\medskip
+\noindent\textbf{Contributions.}
+\begin{enumerate}[leftmargin=*]
+  \item \textbf{Methodological (\S\ref{sec:gisr:methodology}).} Aggregate execution accuracy is insufficient for grounding-effect claims on geospatial NL2SQL when robustness and spatial questions are mixed. The paired-test convention also matters: pooling $N$ stochastic samples $\times$ $Q$ questions into a single McNemar test on $NQ$ observations violates independence and inflates significance. We use question-level majority vote across $N$ samples followed by a single exact two-sided McNemar test on the per-question table.
+  \item \textbf{Empirical (\S\ref{sec:gisr}).} On 11 LLM families surveyed at $N{=}3$ on CQ-125, grounding improves Robustness in all families by point estimate, but Spatial effects range from $-10.59$ to $+23.53$ pp. This establishes cross-family heterogeneity rather than a universal positive or negative effect.
+  \item \textbf{Diagnostic and design implication (\S\ref{sec:gisr:minimod}--\S\ref{sec:gisr:routing}).} For \texttt{gemini-3.5-flash}, a focused three-condition analysis identifies a candidate negative-tail case and links many regressions to unsolicited SQL elaboration. A perfect-classifier routing calculation gives an upper bound for subset-conditional grounding, but we treat it as a design implication, not a validated production policy.
+\end{enumerate}
+
+The semantic-layer framework, intent-conditioned router, SQL postprocessor, and execution-time self-correction loop on which grounding is implemented are described in \S\ref{sec:method}. The new questions are not how to ground, but \emph{when grounding helps which question class on which family} and \emph{how to test that question with an honest paired statistic}. As supporting deployment context, not as primary inferential evidence, \S\ref{sec:gemma4-scale-sweep} reports a fixed-host Gemma4 model-size sweep.
+
+The paper proceeds as follows. \S\ref{sec:related} reviews GIScience foundations and recent NL-to-spatial-database systems. \S\ref{sec:method} summarises the framework. \S\ref{sec:experiments} describes the experimental setup. \S\ref{sec:baseline-results} reports framework behaviour and bridges to \S\ref{sec:gisr}, the central empirical section. \S\ref{sec:discussion} discusses interpretation, limitations, and ties to GIScience. \S\ref{sec:conclusion} concludes.
+
+% =============================================================================
+\section{Related Work}
+\label{sec:related}
+% =============================================================================
+
+\input{related_work_v7_codex.tex}
+
+% =============================================================================
+\section{Method: Semantic-Layer Framework}
+\label{sec:method}
+% =============================================================================
+
+\input{method_v7_codex.tex}
+
+% =============================================================================
+\section{Experimental Setup}
+\label{sec:experiments}
+% =============================================================================
+
+\input{experiments_setup_v7_codex.tex}
+
+% =============================================================================
+\section{Baseline Framework Evaluation}
+\label{sec:baseline-results}
+% =============================================================================
+
+\input{baseline_results_v7_codex.tex}
+
+% =============================================================================
+% Main contribution: subset-decomposed grounding effects
+% =============================================================================
+\input{gisr_section_codex.tex}
+
+% =============================================================================
+\section{Discussion}
+\label{sec:discussion}
+% =============================================================================
+
+\subsection{A Spatial--Robustness inversion in one fast-model family}
+\label{sec:discussion:why}
+
+Per-record diff between A (no grounding) and B (grounding only) on \texttt{gemini-3.5-flash} suggests that many regressions involve SQL elaboration the question did not ask for. Among 91 distinct $A$-pass / $B$-fail pairs across $N=3$ samples (pooled for diagnostic, not for inference), the four largest patterns are nested subquery wrapping (29.7\%), redundant \texttt{WHERE} clauses (17.2\%), unsolicited \texttt{GROUP BY} (14.1\%), and \texttt{ST\_Union} pre-aggregation before \texttt{ST\_Centroid}/\texttt{ST\_Area} (4.7\%). Each can shift the result-set shape away from the gold answer even when the model has identified the relevant table and spatial concept.
+
+\paragraph{A geospatial cognitive-load reading.} One GIScience interpretation is that grounding context, by exposing more table-and-column metadata than the question itself uses, may encourage \texttt{gemini-3.5-flash} to compose an ``explanatory'' SQL statement that incorporates that metadata. Such statements can aggregate across a parent table, join to context tables, or project additional descriptive columns while no longer matching the gold result. We refer to this diagnostic pattern as \emph{geospatial over-engineering}: prompt-side spatial evidence (geometry types, SRID ranges, predicate taxonomies, alias hierarchies) may shift from reference material to checklist material for some model families. The Spatial subset is more exposed to this failure mode because spatial questions admit a wider space of plausible-but-wrong elaborations; Robustness questions are more structurally constrained by refusal, bounded preview, and schema validation.
+
+A second possible factor is baseline headroom. Several families that gain from grounding on the Spatial subset have weaker no-grounding EX --- for example \texttt{deepseek-v4-flash} (43\%), \texttt{qwen3.6-flash} (35\%), and \texttt{qwen3.7-max} (44\%) --- so the marginal information from grounding may outweigh the over-elaboration risk. \texttt{gemini-3.5-flash} starts at 48.6\%, leaving less room for grounding to add schema-linking value. A third possibility concerns instruction tuning in fast model tiers. Models tuned strongly for refusal and safety behaviour may benefit on Robustness while becoming less able to ignore optional context on ordinary spatial queries. We do not have access to model internals, so this remains an interpretation rather than a mechanistic claim.
+
+\subsection{Why subset decomposition is not optional}
+
+The CQ-125 benchmark mixes 85 spatial-query questions and 40 robustness questions. For the same family, the focused three-condition analysis gives opposite-signed subset effects for grounding-only versus no-grounding: $-10.59$ pp on Spatial and $+27.50$ pp on Robustness. Any aggregate metric over a benchmark with this kind of mixture can obscure the interaction. This lesson is directly relevant to GIScience evaluation: spatial predicate translation, metric measurement, bounded preview, and refusal are different behaviours and should not be collapsed into a single headline without subset reporting.
+
+\subsection{Model-size scaling is a deployment question, not only a leaderboard question}
+
+The fixed-host Gemma4 sweep is included only as a deployment probe. Under the same CQ-125 benchmark and local Ollama host, the full pipeline improved all five tested Gemma4 scales by descriptive point estimate. The largest model, \texttt{Gemma4:31b}, had the highest observed full-pipeline EX (114/125). The \texttt{Gemma4:26b} run was one question lower (113/125) and used 12.50 minutes rather than 20.04 minutes.
+
+This result should not be interpreted as statistical evidence about model families. It uses single-host execution summaries, not the $N{=}3$ majority-vote protocol used for the cross-family grounding-effect panel. Its value is practical: semantic-layer grounding may narrow the gap between mid-size and larger local models, so deployment choice can require an accuracy--runtime trade-off rather than a largest-model rule.
+
+\subsection{Limitations}
+\label{sec:discussion:limitations}
+
+\begin{enumerate}[itemsep=2pt]
+\item \textbf{Finite-sample regime; multiple-comparison correction.} All primary cross-family panel cells are at $N{=}3$ paired samples per question. The focused \texttt{gemini-3.5-flash} A/B/C check is balanced at $N{=}5$ and retains a negative Spatial point estimate, but it remains non-significant ($p=0.136$). We label it a diagnostic negative-tail observation, not a confirmed model-family property.
+\item \textbf{Single primary benchmark.} CQ-125 has a 85:40 spatial:robustness mixture. We have ported FloodSQL-Bench to the same PostgreSQL/PostGIS evaluation harness and completed a single \texttt{gemini-2.5-flash} stratified smoke run, but that run is not a full external replication. Confirmation requires a pre-specified multi-family, $N{\geq}3$ run on benchmarks of different composition, including pure-spatial GeoSQL-Eval~\citep{hou2026geosql}, FloodSQL-Bench~\citep{liu2025floodsql}, and a pure-warehouse BIRD held-out set.
+\item \textbf{Mini-mod is a candidate patch.} The balanced $N{=}5$ patch effect on Spatial is marginal ($p=0.065$) and we do not claim it as a validated technique.
+\item \textbf{Intent-aware gating is upper-bound analysis.} A classifier-validated end-to-end EX evaluation, including classifier P/R/F1 on CQ-125 and end-to-end EX after misrouting, is not reported in this manuscript and is identified as immediate follow-up.
+\item \textbf{Subset of LLMs surveyed.} The 11-family panel includes only models with API access during the evaluation window. Replication on additional model providers is required before treating the observed distribution of effects as representative of the broader model ecosystem.
+\item \textbf{Gemma4 scale sweep is a deployment probe.} The five-size Gemma4 sweep is reported to expose a practical accuracy--runtime trade-off on a fixed local host. It is not a stochastic $N{=}3$ family-level inference panel, and its best-observed full-pipeline rows should not be interpreted as statistical significance evidence.
+\item \textbf{Question phrasing.} Four of 125 questions admit superset-column readings. They are two Easy items and two Medium items in CQ-125. A relaxed col-count ablation does not change the qualitative conclusion.
+\end{enumerate}
+
+\subsection{Future work}
+
+(i) External replication of the balanced A/B/C diagnostic on benchmarks with different composition, including a pure-spatial PostGIS benchmark, FloodSQL-Bench, and a pure-warehouse benchmark. (ii) End-to-end intent-aware-gating evaluation under a real classifier with reported P/R/F1 and post-misrouting EX. (iii) Extension of the $N{\geq}5$ three-condition protocol beyond \texttt{gemini-3.5-flash} to additional LLM families. (iv) Inclusion of OpenAI and Anthropic families to test whether the family-conditional pattern is specific to the currently available model panel. (v) Mechanistic study of the over-engineering interpretation through controlled perturbation of grounding-context length and content.
+
+% =============================================================================
+\section{Conclusion}
+\label{sec:conclusion}
+% =============================================================================
+
+We report a question-level paired-McNemar evaluation of schema-aware grounding across 11 LLM families on the 125-question PostGIS NL2GeoSQL benchmark CQ-125. The grounding effect is heterogeneous and family-conditional. On the 85-question Spatial subset, point estimates range from $-10.59$ pp (\texttt{gemini-3.5-flash}, $p=0.136$) to $+23.53$ pp (\texttt{deepseek-v4-flash}, $p<0.001$). On the 40-question Robustness subset, all 11 families improve in point estimate. A balanced $N{=}5$ three-condition analysis of \texttt{gemini-3.5-flash} retains the negative Spatial point estimate for grounding-only versus no-grounding ($-10.59$ pp, $p=0.136$), but does not convert it into a significant family-level regression. The methodological conclusion is stronger: aggregate execution accuracy is insufficient on mixed Spatial--Robustness benchmarks, and pooled McNemar tests over repeated stochastic samples inflate significance. We recommend subset-decomposed reporting and question-level majority-vote McNemar tests as the default evaluation protocol for grounding studies in geospatial NL2SQL.
+
+% =============================================================================
+\section*{Author Contributions}
+% =============================================================================
+
+Ning Zhou conceived the study, designed the benchmark and semantic-layer
+evaluation protocol, implemented the analysis scripts, ran the experiments,
+verified the statistical analyses, wrote the manuscript, and approved the final
+version for submission.
+
+% =============================================================================
+\section*{Funding}
+% =============================================================================
+
+The author received no financial support for the research, authorship, or
+publication of this article.
+
+% =============================================================================
+\section*{Competing Interests}
+% =============================================================================
+
+The author declares no competing interests.
+
+% =============================================================================
+\section*{Ethics Statement}
+% =============================================================================
+
+This study uses benchmark questions, schema-level database metadata, generated
+SQL, and offline execution/evaluation records. It does not report experiments on
+human participants, patient data, or animal subjects. The underlying operational
+database rows are withheld because they contain sensitive local data.
+
+% =============================================================================
+\section*{Use of Artificial Intelligence Tools}
+% =============================================================================
+
+Large language models are the objects of evaluation in this study, and their use
+in the experimental protocol is described in the manuscript. Claude Code and
+OpenAI Codex were also used for editorial support, language polishing, format
+checking, and consistency review during manuscript preparation. The author
+checked and revised all AI-assisted text, verified the accuracy of the
+manuscript and references, and takes full responsibility for the final content.
+No AI tool is listed as an author.
+
+% =============================================================================
+\section*{Data and Code Availability Statement}
+% =============================================================================
+
+{\sloppy
+An anonymised reproduction package for double-anonymised review is available at
+\url{https://anonymous.4open.science/r/nl2geosql-reproduction-36D6/}.
+The package contains offline analysis scripts, schema manifests, semantic-layer configuration, benchmark question metadata, prompt profiles, and pre-computed execution/evaluation records that support offline regeneration of the primary CQ-125 grounding-effect analyses and the previously released framework-level tables. These checks require no LLM API calls, database access, GPU resources, or access to sensitive raw records. The balanced \texttt{gemini-3.5-flash} N=5 A/B/C diagnostic summary, the fixed-host Gemma4 deployment sweep, and the FloodSQL-Bench smoke audit added in this revision are provided as source-table summaries with the manuscript source. The underlying operational database rows are not released because they contain sensitive local data. Instead, we release the schema-level information required for reproducibility: table/column structure, geometry-column metadata, SRID information, and semantic grounding rules. The repository license file specifies MIT licensing for code and CC-BY 4.0 licensing for benchmark questions and frozen LLM evaluation outputs under \texttt{data/}. After acceptance, the anonymised review link will be replaced by a permanent archival repository with the same file layout and explicit license text.
+\par}
+
+\medskip
+\noindent\begin{tabular}{p{0.22\linewidth}p{0.30\linewidth}p{0.36\linewidth}}
+\toprule
+Item & Availability & Reproducibility role \\
+\midrule
+Primary CQ-125 traces & Anonymised review repository & Regenerate the subset-decomposed majority-vote tables and McNemar tests without LLM or database access. \\
+Schema and grounding metadata & Anonymised review repository & Audit table structure, geometry columns, SRID information, and semantic-layer rules without exposing row-level records. \\
+Gemini 3.5 A/B/C diagnostic & Manuscript source CSV & Audit the balanced N=5 majority-vote summary used in the focused three-condition analysis. \\
+Gemma4 deployment probe & Manuscript source CSVs & Audit the descriptive fixed-host scale-sweep summary and Ollama model metadata; not used in primary statistical reductions. \\
+FloodSQL-Bench smoke audit & Manuscript source CSV & Audit external-harness readiness; not used as generalisation evidence. \\
+Software/data license & Repository \texttt{LICENSE} & Code released under MIT; benchmark questions and frozen LLM outputs under CC-BY 4.0. \\
+Operational row data & Withheld & Not released because the database contains sensitive local records. \\
+Permanent archive & After acceptance & Replace the anonymised review link with a durable repository and explicit software/data license. \\
+\bottomrule
+\end{tabular}
+
+% =============================================================================
+\bibliographystyle{plainnat}
+\bibliography{references_codex}
+% =============================================================================
+
+\end{document}

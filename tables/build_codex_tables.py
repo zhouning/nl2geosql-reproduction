@@ -1,9 +1,10 @@
 """Build the v7_codex majority-vote tables from frozen JSONL records.
 
-This script mirrors the statistical convention used in the revised IJGIS
-manuscript:
+This script mirrors the statistical convention used in the revised Computers &
+Geosciences manuscript:
 
-* cap each condition/family to N=3 samples;
+* cap the cross-family panel to N=3 samples per family;
+* cap the focused gemini-3.5-flash A/B/C diagnostic to N=5 samples;
 * reduce repeated stochastic samples to one question-level majority vote;
 * run one exact two-sided McNemar test on the per-question table.
 
@@ -31,6 +32,8 @@ FOCUSED_FAMILY = "gemini-3.5-flash"
 FOCUSED_A_RUN = RESULTS / "v7_gemini35_minimod_n3_20260524"
 FOCUSED_B_RUN = RESULTS / "v7_gemini35_recheck_n3_2026-05-22_095253"
 FOCUSED_C_RUN = FOCUSED_A_RUN
+FOCUSED_CAP = 5
+CROSS_FAMILY_CAP = 3
 
 FAMILIES = [
     ("gemini-2.5-flash", "v7_d1d6_full_n3_2026-05-15_193934", "gemini-2.5-flash"),
@@ -119,9 +122,9 @@ def paired_mv(mv_a: dict[str, dict], mv_b: dict[str, dict], filter_fn) -> dict:
 
 
 def focused_three_condition() -> dict:
-    mv_a = majority_vote(load_samples(FOCUSED_A_RUN, FOCUSED_FAMILY, "baseline"))
-    mv_b = majority_vote(load_samples(FOCUSED_B_RUN, FOCUSED_FAMILY, "full"))
-    mv_c = majority_vote(load_samples(FOCUSED_C_RUN, FOCUSED_FAMILY, "full"))
+    mv_a = majority_vote(load_samples(FOCUSED_A_RUN, FOCUSED_FAMILY, "baseline", cap=FOCUSED_CAP))
+    mv_b = majority_vote(load_samples(FOCUSED_B_RUN, FOCUSED_FAMILY, "full", cap=FOCUSED_CAP))
+    mv_c = majority_vote(load_samples(FOCUSED_C_RUN, FOCUSED_FAMILY, "full", cap=FOCUSED_CAP))
 
     out = {}
     for key, label, filter_fn in SUBSETS:
@@ -144,8 +147,8 @@ def focused_three_condition() -> dict:
 def cross_family() -> dict:
     out = {}
     for family_label, run_name, family_dir in FAMILIES:
-        mv_a = majority_vote(load_samples(RESULTS / run_name, family_dir, "baseline"))
-        mv_b = majority_vote(load_samples(RESULTS / run_name, family_dir, "full"))
+        mv_a = majority_vote(load_samples(RESULTS / run_name, family_dir, "baseline", cap=CROSS_FAMILY_CAP))
+        mv_b = majority_vote(load_samples(RESULTS / run_name, family_dir, "full", cap=CROSS_FAMILY_CAP))
         row = {}
         for key, label, filter_fn in SUBSETS:
             if key not in {"spatial", "robust", "medium"}:
@@ -160,7 +163,11 @@ def cross_family() -> dict:
 
 def main() -> int:
     out = {
-        "convention": "N=3 question-level majority vote followed by one exact two-sided McNemar test per subset",
+        "convention": (
+            "Cross-family panel: N=3 question-level majority vote followed by one "
+            "exact two-sided McNemar test per subset. Focused gemini-3.5-flash "
+            "A/B/C diagnostic: balanced N=5 under the same question-level convention."
+        ),
         "focused_three_condition": focused_three_condition(),
         "cross_family": cross_family(),
     }

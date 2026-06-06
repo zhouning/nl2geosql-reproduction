@@ -1,0 +1,460 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{times}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{caption}
+\usepackage{enumitem}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{url}
+\usepackage[hidelinks]{hyperref}
+
+\title{Supplementary Material for\\Subset-Decomposed Evaluation of Schema-Aware Grounding\\for PostGIS Natural-Language-to-SQL Across Eleven LLMs}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\noindent This supplement collects two pieces of material referenced from the main text but moved out of the main body to keep the manuscript focused. Cross-references from the main manuscript appear as ``Supplement~S1/S2''.
+
+\begin{itemize}[leftmargin=*]
+\item \textbf{S1.} Full baseline framework evaluation: BIRD warehouse track design-set and held-out, cross-lingual per-question re-audit, DIN-SQL external comparison, full reproducibility inventory, and the cross-model-family $2{\times}2$ factorial that motivated the broader cross-family panel reported in main-text Section~6.
+\item \textbf{S2.} End-to-end worked example tracing one Chongqing benchmark question through every pipeline stage (referenced from main text \S3).
+\end{itemize}
+
+\section*{S1. Baseline framework evaluation (full version)}
+
+The main text \S5 provides a compact summary of framework behaviour on the GIS Spatial set, BIRD warehouse track, DIN-SQL comparison, and cross-lingual probe; this section provides the full multi-section version with all per-question paired McNemar tables. These framework-level runs are supporting context and use their original protocols. The primary cross-family grounding-effect analysis in main-text Section~6 uses question-level majority vote followed by a single exact two-sided McNemar test on the per-question table.
+
+\subsection*{S1.1 BIRD mini\_dev design-set and held-out details}
+
+This section expands the warehouse-track stub in the main text \S5.
+main text. We report the BIRD evaluation in two parts: a \emph{design set} of 108 paired
+questions on which grounding rules were derived by error attribution, and a disjoint
+\emph{held-out set} of 150 paired questions on which the same rules are tested without
+further tuning.
+
+\paragraph{Round-1 grounding (design set).} Round-1 adds three rule sections to the
+prompt: (i)~multi-hop join-path discovery bridging fact-to-fact tables through pivot
+dimensions; (ii)~aggregation semantics clarifying \texttt{COUNT(*)} vs.\ \texttt{COUNT(col)}
+vs.\ \texttt{COUNT(DISTINCT col)}; (iii)~temporal handling for TEXT-typed date columns
+(prefix comparison, \texttt{SUBSTR} extraction). On 101 paired questions it gave
+EX$=0.564$ vs.\ baseline $0.515$ ($+0.050$, paired McNemar two-sided $p=0.2266$,
+$b=3$, $c=8$).
+
+\paragraph{Round-2 grounding (design set).} Error attribution on round-1 failures
+identified three patterns: 16 of 46 both-fails differed from the gold SQL only in
+\texttt{DISTINCT} placement (SELECT list dimensions duplicated through one-to-many
+JOINs); 4 regressions were caused by over-JOINing when a single table sufficed;
+multiple \texttt{student\_club} questions used \texttt{||} concatenation where the
+gold returned first/last name as separate columns. Round-2 adds three targeted rules:
+DISTINCT-after-one-to-many-JOIN, avoid-over-JOIN, and output-column format (full name
+as separate columns; \texttt{LIMIT 1} via \texttt{ORDER BY} rather than subquery with
+\texttt{MAX}/\texttt{MIN}).
+
+Table~\ref{tab:bird-supp} reports the round-2 result on 108 paired design questions and
+on the 150-question held-out set. Significance on the design set alone does not
+establish generalisation because the rules were derived from the same 108 items.
+
+\begin{table}[h]
+\centering\footnotesize
+\caption{BIRD warehouse results across rounds and splits.}
+\label{tab:bird-supp}
+{\setlength{\tabcolsep}{3pt}
+\begin{tabular}{lc>{\raggedright\arraybackslash}p{2.8cm}>{\raggedright\arraybackslash}p{2.8cm}>{\raggedright\arraybackslash}p{3.0cm}}
+\toprule
+Set & $N$ & Baseline EX [95\% CI] & Full EX [95\% CI] & $\Delta$ [95\% CI] \\
+\midrule
+Round-1 grounding (design, subset) & 101 & 0.515 & 0.564 & $+$0.050 ($p=0.227$, NS) \\
+\textbf{Round-2 design set (tuning)} & \textbf{108} & \textbf{0.500 [0.41, 0.59]} & \textbf{0.593 [0.50, 0.68]} & $+$\textbf{0.093} [0.02, 0.16] ($p=0.021$) \\
+\textbf{Round-2 held-out (primary)}  & \textbf{150} & \textbf{0.473 [0.40, 0.55]} & \textbf{0.507 [0.43, 0.59]} & $+$\textbf{0.033} [$-$0.03, 0.09] ($p=0.383$, NS) \\
+\midrule
+Validity (R2 design) & 108 & 0.981 & 0.991 & $+$0.010 \\
+Validity (R2 held-out) & 150 & 0.980 & 1.000 & $+$0.020 \\
+Mean tokens (R2 design) & 108 & 1{,}010 & 7{,}975 & $7.9\times$ \\
+\bottomrule
+\end{tabular}
+}
+\end{table}
+
+\paragraph{Interpretation.} The round-2 design-set gain of $+0.093$ with $p=0.0213$
+should be read as a \emph{development-set tuning effect}: the rules were derived by
+error attribution on this same 108-item sample, so significance on this set documents
+that the rules address the specific failure modes observed there. The primary
+warehouse-side significance test is therefore the held-out evaluation, where the
+same rules yield only $+0.033$ with 95\% paired-proportion CI $[-0.03, 0.09]$ and
+$p=0.3833$ on 21 discordant pairs ($b=8$, $c=13$); direction is preserved, magnitude
+drops by about two-thirds, and the CI comfortably covers zero. Two readings are
+consistent with this pattern: (a)~part of the design-set gain is in-sample
+specialisation to the 108-item mix; (b)~at $n=150$ the effect-size-to-variance ratio
+remains low even if a small true effect exists. We therefore do not claim a
+BIRD-wide improvement from round-2 grounding. Validity improves on both sets
+($0.981\to 0.991$ design, $0.980\to 1.000$ held-out), which we attribute to the
+postprocessor's safety checks rather than to rule content. Token cost on the design
+set is $7.9\times$ baseline, down from $\sim$32$\times$ in the earlier agent-loop
+configuration.
+
+Representative design-set wins: Q1155 (``\emph{List patient ID, sex and birthday with
+LDH beyond normal range}'') --- round-1 omitted \texttt{DISTINCT}, round-2 added it;
+Q1334 (``\emph{full names of members from Illinois}'') --- round-1 used string
+concatenation, round-2 returned separate columns; Q1506 --- round-1 missed
+\texttt{DISTINCT}, round-2 added it.
+
+\paragraph{Relation to the earlier multi-pass evaluation.} A multi-pass agent-loop
+run on a 500-question BIRD subset (without round-2 rules) previously reported
+baseline $0.474$, full $0.501$, $\Delta=+0.027$ with $p=0.136$. We retain this only
+as context for the token-cost comparison; the 150-question held-out evaluation is
+the appropriate independent test of the single-pass grounded pipeline.
+
+\paragraph{DIN-SQL older 495q comparison and held-out paired run.} For the BIRD
+track, DIN-SQL was previously evaluated on a 495-question single-pass run as
+context for token cost; on that older sample, all three methods (Baseline $0.474$,
+DIN-SQL $0.482$, Full $0.501$) cluster between $0.47$ and $0.51$ and the
+full-vs-DIN-SQL difference is $+0.019$ ($p=0.382$, NS). The DIN-SQL row in
+Table~6 of the main text reports that older comparison only. We additionally
+run a paired DIN-SQL comparison on the round-2 150-question held-out set against
+the same Full pipeline configuration; the result is reported in Section~S1.4
+(Table~\ref{tab:dinsql-bird-heldout}): Full $0.507$ vs.\ DIN-SQL $0.440$, $b=18$,
+$c=8$, paired McNemar two-sided exact $p=0.0755$ (marginal). The 495q row is
+retained for token-cost continuity; the held-out row is the appropriate independent
+DIN-SQL comparison.
+
+\subsection*{S1.2 Cross-lingual re-audit: per-question detail}
+
+Table~\ref{tab:crosslingual-per-question} lists the $50$ BIRD Chinese items, their
+reviewer label (ok / fix / drop), the pre-review prediction correctness (0/1), and
+the post-review prediction correctness (0/1). This table is machine-generated from
+the re-evaluation harness.
+
+% [Rows rendered by scripts/nl2sql_bench_cq/render_crosslingual_supplement.py]
+\begin{longtable}{lllccc}
+\caption{Per-question reviewer label and pre/post EX on the BIRD Chinese 50-question re-audit.}
+\label{tab:crosslingual-per-question} \\
+\toprule
+qid & db\_id & difficulty & review & pre EX & post EX \\
+\midrule
+\endfirsthead
+\multicolumn{6}{c}{\tablename\ \thetable{} -- continued} \\
+\toprule
+qid & db\_id & difficulty & review & pre EX & post EX \\
+\midrule
+\endhead
+\midrule
+\multicolumn{6}{r}{\emph{continued on next page}} \\
+\endfoot
+\bottomrule
+\endlastfoot
+1312 & student\_club & simple & fix & 1 & 1 \\
+1317 & student\_club & moderate & fix & 1 & 1 \\
+1322 & student\_club & moderate & fix & 0 & 0 \\
+1323 & student\_club & moderate & fix & 0 & 0 \\
+1331 & student\_club & simple & fix & 0 & 0 \\
+1334 & student\_club & simple & ok & 1 & 1 \\
+1338 & student\_club & moderate & fix & 0 & 0 \\
+1339 & student\_club & challenging & fix & 0 & 0 \\
+1340 & student\_club & moderate & fix & 1 & 1 \\
+1344 & student\_club & simple & fix & 1 & 1 \\
+1346 & student\_club & simple & ok & 1 & 1 \\
+1350 & student\_club & moderate & fix & 1 & 1 \\
+1351 & student\_club & simple & fix & 1 & 1 \\
+1352 & student\_club & moderate & ok & 1 & 1 \\
+1356 & student\_club & simple & fix & 1 & 1 \\
+1357 & student\_club & simple & ok & 1 & 1 \\
+1359 & student\_club & challenging & fix & 1 & 1 \\
+1361 & student\_club & simple & ok & 1 & 1 \\
+1362 & student\_club & simple & ok & 1 & 1 \\
+1368 & student\_club & simple & ok & 1 & 1 \\
+1471 & debit\_card\_specializing & simple & ok & 1 & 1 \\
+1472 & debit\_card\_specializing & moderate & fix & 1 & 1 \\
+1473 & debit\_card\_specializing & moderate & ok & 0 & 0 \\
+1476 & debit\_card\_specializing & challenging & fix & 1 & 1 \\
+1479 & debit\_card\_specializing & moderate & fix & 0 & 0 \\
+1480 & debit\_card\_specializing & moderate & fix & 1 & 1 \\
+1481 & debit\_card\_specializing & challenging & fix & 0 & 0 \\
+1482 & debit\_card\_specializing & challenging & fix & 0 & 0 \\
+1483 & debit\_card\_specializing & simple & ok & 1 & 1 \\
+1484 & debit\_card\_specializing & simple & ok & 0 & 0 \\
+1486 & debit\_card\_specializing & simple & ok & 0 & 0 \\
+1490 & debit\_card\_specializing & moderate & fix & 0 & 0 \\
+1493 & debit\_card\_specializing & simple & fix & 1 & 0 \\
+1498 & debit\_card\_specializing & simple & fix & 0 & 1 \\
+1500 & debit\_card\_specializing & simple & fix & 0 & 0 \\
+1501 & debit\_card\_specializing & moderate & ok & 0 & 0 \\
+1505 & debit\_card\_specializing & simple & ok & 0 & 0 \\
+1506 & debit\_card\_specializing & moderate & fix & 1 & 1 \\
+1507 & debit\_card\_specializing & simple & fix & 1 & 1 \\
+1509 & debit\_card\_specializing & moderate & ok & 1 & 1 \\
+1514 & debit\_card\_specializing & simple & fix & 0 & 0 \\
+1515 & debit\_card\_specializing & simple & fix & 1 & 1 \\
+1521 & debit\_card\_specializing & moderate & ok & 1 & 1 \\
+1524 & debit\_card\_specializing & simple & fix & 1 & 1 \\
+1525 & debit\_card\_specializing & simple & ok & 0 & 0 \\
+1526 & debit\_card\_specializing & challenging & fix & 0 & 0 \\
+1528 & debit\_card\_specializing & simple & fix & 1 & 0 \\
+1529 & debit\_card\_specializing & moderate & fix & 0 & 0 \\
+1531 & debit\_card\_specializing & moderate & ok & 0 & 0 \\
+1533 & debit\_card\_specializing & moderate & fix & 0 & 0 \\
+\end{longtable}
+
+\subsection*{S1.3 Cross-model-family full factorial (Gemini vs.\ DeepSeek, $4$ cells $\times$ N$=$3)}
+
+The initial framework evaluation used Gemini~2.5~Flash. To probe whether the observed gain
+from semantic grounding and intent-conditioned routing transferred to another LLM
+family, we ran a $2{\times}2$ factorial on the full 85-question GIS Spatial
+benchmark with model family $\in\{$Gemini~2.5~Flash, DeepSeek-V3$\}$ and
+pipeline $\in\{$schema-only baseline, full$\}$. The full pipeline is routed
+through a unified model gateway so that the same ADK \texttt{LlmAgent} agent
+loop runs on either family without branch-specific code; DeepSeek is reached
+via the OpenAI-compatible LiteLLM adapter. Following the main-text Spatial
+protocol (Section~3.4 of the manuscript), the full cell is sampled $N{=}3$
+times per family and aggregated by majority vote to absorb decoding
+stochasticity; each family uses its own provider-default temperature, which
+is deployment-realistic. DeepSeek baseline is also run at $N{=}3$ because
+DeepSeek's API is not deterministic at temperature~$0$; the Gemini baseline
+remains $N{=}1$ because the schema-only \texttt{baseline\_generate} path sets
+temperature~$0$ explicitly and Gemini~2.5~Flash is deterministic for that
+family. Table~\ref{tab:cross-family-4cell} summarises the four cells;
+Table~\ref{tab:cross-family-paired} reports the four paired McNemar tests on
+majority-vote predictions.
+
+\begin{table}[h]
+\centering
+\caption{$4$-cell cross-family factorial on the full 85-question GIS Spatial
+benchmark. $\mathrm{EX}$ is execution accuracy over the paired gold-SQL
+harness; SD is sample SD across $N=3$ samples within cell. Gemini~full
+per-sample EX is reused from the main-text Spatial $N=3$ protocol;
+DeepSeek cells are new.}
+\label{tab:cross-family-4cell}
+\begin{tabular}{lcccc}
+\toprule
+Cell & EX mean & EX SD & $N$ & Majority-vote EX \\
+\midrule
+Gemini baseline   & $0.529$ & ---      & $1$ & $0.529$ \\
+Gemini full       & $0.663$ & $0.048$  & $3$ & $0.659$ \\
+DeepSeek baseline & $0.533$ & $0.007$  & $3$ & $0.529$ \\
+DeepSeek full     & $0.459$ & $0.042$  & $3$ & $0.482$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{Paired McNemar on majority-vote predictions across the $2{\times}2$
+design (two-sided exact binomial). $b$ is the number of qids where the first
+cell is correct and the second is incorrect; $c$ is the converse.}
+\label{tab:cross-family-paired}
+\begin{tabular}{lcccc}
+\toprule
+Contrast & $b$ & $c$ & $\Delta$EX & Paired $p$ \\
+\midrule
+Within-family Gemini   (base vs.\ full)     & $8$  & $19$ & $+0.129$ & $0.052$ \\
+Within-family DeepSeek (base vs.\ full)     & $18$ & $14$ & $-0.047$ & $0.597$ \\
+Cross-family baseline  (Gemini vs.\ DS)     & $0$  & $0$  & $0.000$  & $1.000$ \\
+Cross-family full      (Gemini vs.\ DS)     & $22$ & $7$  & $+0.176$ & $0.008$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Reading.} Three findings emerge. \emph{First}, the cross-family
+schema-only baseline is exactly matched: both families reach $0.529$ EX with
+zero discordant qids ($b=c=0$, $p=1.000$), so the full-pipeline contrast is
+not confounded by an a-priori capability gap between the two families on this
+benchmark. \emph{Second}, the within-family Gemini grounding gain of $+0.129$
+(majority-vote, $p=0.052$) is consistent with the framework-level Spatial result.
+\emph{Third}, the same full-pipeline stack --- identical grounding rules,
+intent routing, self-correction, and postprocessor --- does \emph{not}
+transfer to DeepSeek: the within-family DeepSeek contrast is in the opposite
+direction ($-0.047$, $p=0.597$, null), and the cross-family full contrast is
+significantly in Gemini's favour ($+0.176$, $p=0.008$). The grounding stack
+was authored and error-attributed against Gemini traces, and we interpret the
+DeepSeek regression as evidence that semantic grounding plus intent-conditioned
+routing, as currently instantiated, carries family-specific prompt
+sensitivities. This is an honest negative result for the portability claim:
+the mechanism works on the family it was tuned for, does not work on the
+unseen family at the same prompt budget, and the next question is whether
+family-adapted grounding rules recover the gain.
+
+\paragraph{Protocol details.} Full-pipeline per-sample EX values were:
+Gemini $\{0.706, 0.612, 0.671\}$; DeepSeek $\{0.494, 0.412, 0.471\}$.
+DeepSeek baseline per-sample EX: $\{0.529, 0.541, 0.529\}$. Temperature
+pinning was intentionally \emph{not} applied across families: pinning
+temperature~$0$ in a cross-family study would sample a deployment
+configuration neither family actually ships; pinning temperature~$1$ would
+understate Gemini's deployed determinism. We therefore let each family run
+at its provider default and absorbed the decoding variance with $N=3$
+sampling per cell, which is the same protocol the main text uses for its
+Gemini Spatial headline. All six DeepSeek runs were executed on the same day,
+on the same benchmark snapshot, against the same PostGIS instance and the
+same gold-SQL harness.
+
+\subsection*{S1.4 DIN-SQL held-out run (150q) and Robustness paired comparison}
+
+DIN-SQL is a published external baseline for text-to-SQL with explicit prompting
+stages (schema linking, classification-and-decomposition, self-correction). We
+report two paired comparisons of DIN-SQL against the proposed Full pipeline run
+with the same external baseline implementation, the same Gemini~2.5~Flash backbone,
+and the same execution-comparison harness, against PostgreSQL (BIRD) and PostGIS
+(Chongqing) targets.
+
+\paragraph{BIRD 150q held-out.} Table~\ref{tab:dinsql-bird-heldout} pairs DIN-SQL
+with the Full pipeline on the 150-question BIRD mini\_dev held-out set --- the same
+held-out qid list used by the warehouse evaluation in Section~4.4 of the main text.
+The Full pipeline outperforms DIN-SQL by $+0.067$ EX, with discordant counts
+$b=18$ in favour of the Full pipeline and $c=8$ in favour of DIN-SQL; paired
+McNemar two-sided exact $p=0.0755$ is marginal at $\alpha=0.05$ and consistent
+with the small directional effect size on warehouse-style queries reported in
+Section~4.4. By BIRD difficulty, DIN-SQL reaches $0.585$ ($24/41$) on simple,
+$0.434$ ($33/76$) on moderate, and $0.273$ ($9/33$) on challenging items, so the
+DIN-SQL deficit relative to the Full pipeline widens with question difficulty.
+
+\begin{table}[h]
+\centering
+\caption{Paired DIN-SQL vs.\ Full pipeline on the 150-question BIRD held-out set.
+Discordant counts use the convention $b$~=~Full-correct, DIN-incorrect;
+$c$~=~DIN-correct, Full-incorrect.}
+\label{tab:dinsql-bird-heldout}
+\begin{tabular}{lcccc}
+\toprule
+System & EX & Discordant $b$ & Discordant $c$ & Paired $p$ \\
+\midrule
+DIN-SQL          & $0.440$ ($66/150$) & ---  & ---  & ---       \\
+Full pipeline    & $0.507$ ($76/150$) & $18$ & $8$  & $0.0755$  \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Robustness 40q.} DIN-SQL was not designed for safety- or refusal-style
+queries; this is a stringency test of an external baseline against the Robustness
+suite, not a peer benchmark of two safety-aware systems.
+Table~\ref{tab:dinsql-cq-robust} pairs DIN-SQL with the Full pipeline on the
+40-question Robustness suite. The Full pipeline outperforms DIN-SQL by $+0.700$ EX,
+with discordant counts $b=28$ in favour of the Full pipeline and $c=0$ in favour
+of DIN-SQL; paired McNemar two-sided exact $p=7.45\times10^{-9}$. Per-category
+DIN-SQL accuracy: Security Rejection $3/11$, Anti-Illusion $1/9$, Schema Enforcement
+$2/3$, Schema Hallucination $3/8$, Data Tampering Prevention $0/1$, OOM Prevention
+$2/8$. The gaps on Security Rejection and Anti-Illusion in particular reflect the
+absence of a safety/refusal layer in the DIN-SQL prompt design.
+
+\begin{table}[h]
+\centering
+\caption{Paired DIN-SQL vs.\ Full pipeline on the 40-question Robustness suite.
+Discordant counts use the convention $b$~=~Full-correct, DIN-incorrect;
+$c$~=~DIN-correct, Full-incorrect.}
+\label{tab:dinsql-cq-robust}
+\begin{tabular}{lcccc}
+\toprule
+System & EX & Discordant $b$ & Discordant $c$ & Paired $p$               \\
+\midrule
+DIN-SQL          & $0.275$ ($11/40$) & ---  & ---  & ---                   \\
+Full pipeline    & $0.975$ ($39/40$) & $28$ & $0$  & $7.45 \times 10^{-9}$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection*{S1.5 Full reproducibility inventory}
+
+\begin{table}[h]
+\centering\footnotesize
+\caption{Experimental configurations and released artefacts.}
+\label{tab:repro-supp}
+{\setlength{\tabcolsep}{4pt}
+\begin{tabular}{>{\raggedright\arraybackslash}p{3.7cm}>{\raggedright\arraybackslash}p{3.5cm}>{\raggedright\arraybackslash}p{7.5cm}}
+\toprule
+Experiment & Model & Key parameters \\
+\midrule
+GIS 125q (baseline + full) & Gemini 2.5 Flash & temp=0.0, 60s timeout \\
+GIS 125q (DIN-SQL) & Gemini 2.5 Flash & temp=0.0, 4-stage pipeline \\
+BIRD 108q design + 150q held-out & Gemini 2.5 Flash & temp=0.0, single-pass \\
+BIRD (DIN-SQL, older 495q) & Gemini 2.5 Flash & temp=0.0, 4-stage pipeline \\
+Cross-lingual 50q BIRD + 50q GIS & Gemini 2.5 Flash & LLM-translated Chinese \\
+Gemini 3.5 A/B/C diagnostic & Gemini 3.5 Flash & A/B/C all N=5, question-level majority vote \\
+Gemma4 fixed-host sweep & Gemma4 e2b/e4b/12b/26b/31b & Ollama 0.30.5, GGUF Q4\_K\_M, CQ-125 \\
+FloodSQL-\allowbreak{}Bench smoke audit & Gemini 2.5 Flash & stratified 150q, N=1, local PostGIS port \\
+\bottomrule
+\end{tabular}
+}
+\end{table}
+
+\paragraph{Released artefacts.} The anonymised companion repository includes the
+125-question GIS benchmark with gold SQL (85 Spatial + 40 Robustness), the
+108-question BIRD design set and 150-question held-out qid lists with full baseline
+and full-pipeline predictions, the 100-question cross-lingual pairs (50 Chinese
+BIRD + 50 Chinese GIS), the DIN-SQL runner adapted for PostgreSQL/PostGIS, the
+evaluation harness with McNemar and Wilson CI tools, the balanced N=5
+\texttt{gemini-3.5-flash} A/B/C summary, the six-way ablation runner,
+and the SQL postprocessor and self-correction logic. Per-question predicted SQL
+and execution results are included. Revision source tables additionally include
+the fixed-host Gemma4 scale sweep, the queried Ollama model metadata, and the
+FloodSQL-Bench smoke-audit summary.
+
+\paragraph{Run-time configuration.} The framework-level S1 runs use Gemini~2.5~Flash with
+temperature$=0.0$, default top\_p, and default maximum output tokens. Each question
+has a 60-second execution timeout; on \texttt{429 RESOURCE\_\allowbreak{}EXHAUSTED}, the runner
+retries up to 3 times with 2-second initial delay. On no-SQL output, the question
+is recorded with \texttt{gen\_status = no\_sql} and EX$=0$. All McNemar results
+in this paper are reported as two-sided exact binomial tests on discordant pairs;
+the one-sided variant is not used because we do not have a pre-registered
+directional hypothesis on BIRD.
+
+The Gemma4 sweep is documented by frozen local summaries and host metadata
+rather than by a repeated-sample inferential protocol. The FloodSQL-\allowbreak{}Bench audit
+uses a local PostgreSQL/\allowbreak{}PostGIS port of the benchmark and a single
+\texttt{gemini-2.5-\allowbreak{}flash} stratified smoke run; it is included only to document
+that the external harness was operational.
+
+\paragraph{Reviewer access.} A reviewer-accessible companion-repository link is
+provided through the editorial system for double-anonymised review. The primary
+GIS result covers the 125-question benchmark (85 Spatial + 40 Robustness); the
+BIRD evaluation is split into a 108-question design set (rule derivation) and a
+150-question held-out set (independent significance).
+
+\section*{S2. Worked example: end-to-end PostGIS grounding}
+
+The main text \S3 (Worked example) defers the full per-stage trace to this supplement. Figure~\ref{fig:worked-example-suppl} traces a single Chongqing benchmark question through every pipeline stage. The question asks for the total length in kilometres of one-way roads; the gold SQL uses \texttt{ST\_Length} over the geography cast to return length in metres and divides by $1\,000$. Three independent grounding signals cooperate to reach the correct answer: a \emph{metric} intent, a \emph{geometry column} declaration with SRID, and an explicit \texttt{::geography} rule.
+
+\begin{figure}[t]
+\centering
+\footnotesize
+\begin{tabular}{@{}p{0.22\linewidth}p{0.72\linewidth}@{}}
+\toprule
+Stage & Content \\
+\midrule
+NL question ($q$) & \emph{Chinese original, transliterated:} \textit{t\v{o}ngj\`{i} su\v{o}y\v{o}u d\={a}nh\'{a}ngd\`{a}o de z\v{o}ngch\'{a}ngd\`{u} (g\={o}ngl\v{i})}. \emph{English gloss:} ``Total length in kilometres of all one-way roads.'' \\
+\midrule
+Intent classifier & \texttt{intent = spatial\_measurement}, \texttt{metric = length}, \texttt{unit = km}, \texttt{language = zh}. \\
+\midrule
+Semantic resolution (Stage~1) &
+Matches \texttt{cq\_osm\_roads\_2021} as the roads table; resolves the Chinese alias for ``one-way road'' to the filter \texttt{oneway = `yes'}; identifies \texttt{geometry} column (MultiLineString, SRID $4326$, WGS~84 lat/lon). \\
+\midrule
+Grounded context (Stage~2) &
+Schema dump for \texttt{cq\_osm\_roads\_2021}; two injected rules: (i)~\emph{metric operators on lat/lon data require \texttt{::geography} cast so that \texttt{ST\_Length} returns metres}; (ii)~\emph{unit conversion to km is a divide by $1\,000$ performed after \texttt{SUM}}. One spatial-measurement few-shot example with geography cast. \\
+\midrule
+Initial SQL $s^{(0)}$ &
+\texttt{SELECT ROUND(SUM(ST\_Length(geometry)) / 1000.0, 2) AS length\_km}\newline
+\texttt{FROM cq\_osm\_roads\_2021 WHERE oneway = 'yes';} \\
+\midrule
+Postprocessor + execution &
+Executes, but returns a value in degree units because \texttt{::geography} was not applied; the postprocessor tags this as a ``metric unit sanity'' regression against the few-shot expectation and feeds the error message back to the grounded generator. \\
+\midrule
+Corrected SQL $s^{(1)}$ &
+\texttt{SELECT ROUND((SUM(ST\_Length(geometry::geography)) / 1000.0)::numeric, 2)}\newline
+\texttt{AS length\_km FROM cq\_osm\_roads\_2021 WHERE oneway = 'yes';} \\
+\midrule
+Gold SQL &
+\texttt{SELECT ROUND((SUM(ST\_Length(geometry::geography)) / 1000.0)::numeric, 2)}\newline
+\texttt{FROM cq\_osm\_roads\_2021 WHERE oneway = 'yes';} \\
+\midrule
+Outcome & Execution-based match (EX = 1); the postprocessor additionally adds the numeric cast required by PostgreSQL's \texttt{ROUND(double precision, integer)} resolution. \\
+\bottomrule
+\end{tabular}
+\caption{Worked example: a Chongqing benchmark question traced through the full pipeline. The baseline omits the \texttt{::geography} cast; Stage~2 rule injection closes the gap.}
+\label{fig:worked-example-suppl}
+\end{figure}
+
+Three implementation artefacts support this flow. The \emph{semantic layer} is a per-database YAML file declaring, for each table, its aliases (including Chinese translations), geometry columns with SRID and geometry type, and a list of rule identifiers that should be injected when the table is matched. The \emph{intent rules} are a small set of classifier tags (\texttt{attribute\_filter}, \texttt{aggregation}, \texttt{spatial\_join}, \texttt{spatial\_measurement}, \texttt{knn}, \texttt{preview\_listing}) each associated with a minimal set of prompt-side rules (for example, \texttt{spatial\_measurement} enables the \texttt{::geography} rule and a unit-conversion hint). The \emph{postprocessor} applies a fixed set of rewrites: rejection of write nodes in the SQL AST, identifier case/quoting repair against the real schema, an intent-independent large-table guard that injects \texttt{LIMIT} on large-table preview queries, and the retry loop above. A minimal set of these artefacts, together with the few-shot retrieval top-$k$ setting and the prompt templates used in this paper, is released in the anonymised companion repository.
+
+\end{document}

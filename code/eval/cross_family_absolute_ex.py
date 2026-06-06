@@ -20,6 +20,7 @@ import statistics
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
+LEGACY_CAP = 3
 
 # (label, run_dir, family_subdir, short_label_for_tex)
 FAMILIES = [
@@ -66,7 +67,7 @@ SUBSETS = [
 ]
 
 
-def load_samples(run_dir: Path, family: str, mode: str) -> list[list[dict]]:
+def load_samples(run_dir: Path, family: str, mode: str, cap: int = LEGACY_CAP) -> list[list[dict]]:
     fam_dir = run_dir / family
     if not fam_dir.exists():
         return []
@@ -79,6 +80,8 @@ def load_samples(run_dir: Path, family: str, mode: str) -> list[list[dict]]:
         recs = [json.loads(l) for l in p.open(encoding="utf-8")]
         if len(recs) == 125:
             out.append(recs)
+        if len(out) >= cap:
+            break
     return out
 
 

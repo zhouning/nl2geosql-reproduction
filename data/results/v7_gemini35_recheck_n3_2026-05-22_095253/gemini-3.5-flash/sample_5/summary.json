@@ -1,0 +1,22 @@
+{
+  "model": "gemini-3.5-flash",
+  "family": "gemini",
+  "sample_idx": 5,
+  "modes": {
+    "full": {
+      "ex": 75,
+      "n": 125,
+      "ex_rate": 0.6,
+      "valid": 111,
+      "duration_sec": 6381.7,
+      "failure_bins": {
+        "catalog": 32,
+        "dialect": 0,
+        "golden": 0,
+        "safety": 2,
+        "unknown": 16,
+        "pass": 75
+      }
+    }
+  }
+}

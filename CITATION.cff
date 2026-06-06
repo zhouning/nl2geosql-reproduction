@@ -1,6 +1,6 @@
 cff-version: 1.2.0
-title: "Reproduction package — Grounding-induced spatial regression in NL2GeoSQL on CQ-125"
-message: "If you use this dataset or code, please cite the IJGIS paper (DOI to be added on acceptance)."
+title: "Reproduction package — subset-decomposed grounding effects in NL2GeoSQL on CQ-125"
+message: "If you use this dataset or code, please cite the Computers & Geosciences paper (DOI to be added on acceptance)."
 type: software
 authors:
   - given-names: "Anonymous"

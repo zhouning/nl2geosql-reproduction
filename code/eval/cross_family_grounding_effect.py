@@ -26,7 +26,7 @@ from post_analysis import t_test, mcnemar_exact
 FAMILIES = [
     ("gemini-3.5-flash w/ mini-mod (N=5)",
      "data/results/v7_gemini35_minimod_n3_20260524", "gemini-3.5-flash"),
-    ("gemini-3.5-flash NO-mm recheck (N=3)",
+    ("gemini-3.5-flash NO-mm recheck (N=5)",
      "data/results/v7_gemini35_recheck_n3_2026-05-22_095253", "gemini-3.5-flash"),
     # All families below: N=3, no mini-mod, from the same 5-15 batch run
     ("gemini-2.5-flash (5-15)",

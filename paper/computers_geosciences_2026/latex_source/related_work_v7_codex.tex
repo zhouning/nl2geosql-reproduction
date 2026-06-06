@@ -1,0 +1,37 @@
+% Content of §2 Related Work: section header is in the master file.
+
+\subsection{GIScience foundations for NL-to-spatial-database}
+
+Natural language access to spatial databases sits within the GIScience programme articulated by \citet{goodchild1992gis}: formalising geographic concepts so they can be computed rigorously. The relational spatial semantics we ground against have roots in the $4$- and $9$-intersection formalisms~\citep{egenhofer1991topological} and the simplified end-user topological relations of \citet{clementini1993small} --- equals, disjoint, touches, contains, overlaps, within, crosses, intersects --- which the OGC Simple Feature Access standard codifies for relational spatial SQL~\citep{ogcsfs} and GeoSPARQL~\citep{ogcgeosparql} extends to RDF. PostGIS~\citep{postgis} operationalises these in PostgreSQL and defines the \texttt{geometry}/\texttt{geography} type distinction, the \texttt{::geography} cast, \texttt{ST\_DWithin}, \texttt{ST\_Transform}, and the \texttt{<->} KNN operator any PostGIS-generating system must respect. Our grounding rules encode these formalisms as prompt-side evidence.
+
+\subsection{Natural language interfaces to spatial databases}
+
+Early geospatial question answering focused on small fact databases: \citet{zelle1996geoquery} used inductive logic programming for GeoQuery, and \citet{punjani2018geospatial} extended this to template-based question answering over linked geospatial data, highlighting spatial-predicate coverage and coordinate-system awareness. Recent LLM-era work falls into two groups. The first targets end-to-end NL-to-executable-spatial-SQL: NALSpatial~\citep{liu2025nalspatial} translates user queries into spatial SQL (implemented over the SECONDO spatial DBMS rather than PostGIS); Monkuu~\citep{yu2025monkuu} is an IJGIS-published LLM-powered NL interface with dynamic schema mapping; GeoSQL-Eval~\citep{hou2026geosql} contributes a large-scale LLM evaluation on PostGIS functions and NL2GeoSQL tasks. The second targets higher-level GeoAI agents: GeoCogent~\citep{houcoding2025} is an LLM-based agent for geospatial code generation; GeoAgent~\citep{lin2026geoagent} is a hierarchical multi-agent architecture. Surveys map the broader opportunities~\citep{mai2024foundation}.
+
+Our contribution is narrower than a general GeoAI agent and different from a function-coverage benchmark. We study grounding as an intervention in end-to-end execution-graded NL-to-PostGIS-SQL, where the semantic layer explicitly encodes OGC predicates, SRIDs, geography casts, KNN operators, and read-only bounded-output constraints. The central question is not whether a system can use PostGIS functions in isolation, but how prompt-side spatial evidence changes executable SQL correctness across spatial-query and robustness subsets. Compared with NALSpatial and Monkuu, we contribute a 125-question execution benchmark with an explicit Robustness suite, paired question-level McNemar testing, and an 11-family grounding-effect panel. Compared with GeoSQL-Eval, the benchmark is smaller but is designed to support paired intervention analysis rather than broad function inventory.
+
+Table~\ref{tab:related-comp} summarises the relevant distinction: our benchmark is not the largest PostGIS inventory, but it supports paired grounding-intervention analysis with a robustness suite and released evaluation records.
+
+\begin{table}[t]\centering\footnotesize
+\caption{Direct comparison with recent NL-to-spatial-database systems. NALSpatial is implemented over SECONDO, not PostGIS. $\checkmark$: supported / reported; $-$: not reported.}
+\label{tab:related-comp}
+\setlength{\tabcolsep}{3pt}
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}lccccc@{}}
+\toprule
+System & E2E & Function & Safety & Paired gnd. & Released \\
+\midrule
+Our framework                          & $\checkmark$ & $-$           & $\checkmark$ & $\checkmark$ & $\checkmark$ \\
+NALSpatial~\citep{liu2025nalspatial}    & $-$           & $-$           & $-$           & $-$           & $\checkmark$ \\
+Monkuu~\citep{yu2025monkuu}             & $\checkmark$ & $-$           & $-$           & $-$           & $-$           \\
+GeoSQL-Eval~\citep{hou2026geosql}       & $-$           & $\checkmark$ & $-$           & $-$           & $\checkmark$ \\
+GeoCogent~\citep{houcoding2025}         & $-$           & $-$           & $-$           & $-$           & $-$           \\
+GeoAgent~\citep{lin2026geoagent}        & $-$           & $-$           & $-$           & $-$           & $-$           \\
+\bottomrule
+\end{tabular*}
+\end{table}
+
+\subsection{Text-to-SQL with LLMs and semantic layers}
+
+LLM text-to-SQL has progressed through Spider~\citep{yu2018spider,rajkumar2022evaluating}, BIRD~\citep{li2023bird}, Spider~2.0~\citep{lei2025spider2}, and BEAVER~\citep{chen2024beaver}. DIN-SQL~\citep{pourreza2023dinsql} introduced decomposed in-context prompting with schema linking, query classification, generation, and self-correction; DAIL-SQL~\citep{gao2024dail} introduced skeleton-similarity few-shot selection; C3~\citep{dong2023c3} explored zero-shot ChatGPT text-to-SQL with calibrated bias correction; CSpider~\citep{min2019cspider} is an early multilingual benchmark. Semantic-layer thinking --- entities, measures, dimensions, metric graphs --- is operationalised in tools such as MetricFlow~\citep{metricflow}, which encodes metric definitions in dbt-based analytical warehouses; we adapt the same entity/measure/dimension vocabulary by combining it with GIS annotations (geometry types, SRIDs, OGC predicates). Here BIRD serves as a warehouse track of the same bilingual framework, reported as a design/held-out pair so the warehouse path is measurable and the next engineering round scopable.
+
+% =============================================================================

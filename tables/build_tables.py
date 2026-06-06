@@ -19,6 +19,7 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO / "code" / "eval"))
+LEGACY_CAP = 3
 
 
 # Mirror of FAMILIES in code/eval/cross_family_absolute_ex.py — kept here in
@@ -56,7 +57,7 @@ SUBSETS = [
 ]
 
 
-def load_samples(run_dir: Path, family: str, mode: str) -> list[list[dict]]:
+def load_samples(run_dir: Path, family: str, mode: str, cap: int = LEGACY_CAP) -> list[list[dict]]:
     fam_dir = run_dir / family
     if not fam_dir.exists():
         return []
@@ -69,6 +70,8 @@ def load_samples(run_dir: Path, family: str, mode: str) -> list[list[dict]]:
         recs = [json.loads(l) for l in p.open(encoding="utf-8")]
         if len(recs) == 125:
             out.append(recs)
+        if len(out) >= cap:
+            break
     return out
 
 

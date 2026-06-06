@@ -9,7 +9,7 @@ Reads the N-sample JSONL records under
   4. Unknown bin sub-classification (empty / col_count / pred_err / non_select / dangerous)
   5. Cross-family Δ comparison if other run dirs are passed via --compare
 
-This is the canonical reproduction tool for the IJGIS minimod section. The
+This is the canonical reproduction tool for the focused minimod diagnostic. The
 ad-hoc scripts under ``_review_unknown_bin.py``, ``_unknown_subbin_summary.py``,
 and ``_rescore_relaxed_colcount.py`` are subsumed.
 
