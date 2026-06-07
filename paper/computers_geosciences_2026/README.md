@@ -7,6 +7,7 @@ Computers & Geosciences submission.
 
 - `01_manuscript_computers_geosciences.pdf` — main manuscript.
 - `02_supplementary_material.pdf` — supplementary material.
+- `05_highlights_computers_geosciences.txt` — Computers & Geosciences highlights.
 - `latex_source/` — LaTeX source files and source result tables used to build
   the manuscript and supplement.
 - `latex_source_computers_geosciences.zip` — zip archive of the same LaTeX
@@ -15,6 +16,10 @@ Computers & Geosciences submission.
   formats, plus the Python plotting script.
 - `gemma4_host228_scale_sweep_summary.csv` — source table for the Gemma4
   host228 scale-sweep figure, also mirrored inside `latex_source/`.
+
+The current manuscript source is approximately 5,290 words from Introduction
+through Conclusion under the local LaTeX-aware counting script used for the
+submission check.
 
 The cover letter is intentionally excluded from this reproduction repository
 because it is submission correspondence rather than a reproducibility artefact.

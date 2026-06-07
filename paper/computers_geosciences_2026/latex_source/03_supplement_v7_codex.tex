@@ -380,7 +380,7 @@ FloodSQL-\allowbreak{}Bench smoke audit & Gemini 2.5 Flash & stratified 150q, N=
 }
 \end{table}
 
-\paragraph{Released artefacts.} The anonymised companion repository includes the
+\paragraph{Released artefacts.} The reviewer-accessible companion repository includes the
 125-question GIS benchmark with gold SQL (85 Spatial + 40 Robustness), the
 108-question BIRD design set and 150-question held-out qid lists with full baseline
 and full-pipeline predictions, the 100-question cross-lingual pairs (50 Chinese
@@ -410,7 +410,7 @@ uses a local PostgreSQL/\allowbreak{}PostGIS port of the benchmark and a single
 that the external harness was operational.
 
 \paragraph{Reviewer access.} A reviewer-accessible companion-repository link is
-provided through the editorial system for double-anonymised review. The primary
+provided through the editorial system for reviewer access. The primary
 GIS result covers the 125-question benchmark (85 Spatial + 40 Robustness); the
 BIRD evaluation is split into a 108-question design set (rule derivation) and a
 150-question held-out set (independent significance).
@@ -458,6 +458,6 @@ Outcome & Execution-based match (EX = 1); the postprocessor additionally adds th
 \label{fig:worked-example-suppl}
 \end{figure}
 
-Three implementation artefacts support this flow. The \emph{semantic layer} is a per-database YAML file declaring, for each table, its aliases (including Chinese translations), geometry columns with SRID and geometry type, and a list of rule identifiers that should be injected when the table is matched. The \emph{intent rules} are a small set of classifier tags (\texttt{attribute\_filter}, \texttt{aggregation}, \texttt{spatial\_join}, \texttt{spatial\_measurement}, \texttt{knn}, \texttt{preview\_listing}) each associated with a minimal set of prompt-side rules (for example, \texttt{spatial\_measurement} enables the \texttt{::geography} rule and a unit-conversion hint). The \emph{postprocessor} applies a fixed set of rewrites: rejection of write nodes in the SQL AST, identifier case/quoting repair against the real schema, an intent-independent large-table guard that injects \texttt{LIMIT} on large-table preview queries, and the retry loop above. A minimal set of these artefacts, together with the few-shot retrieval top-$k$ setting and the prompt templates used in this paper, is released in the anonymised companion repository.
+Three implementation artefacts support this flow. The \emph{semantic layer} is a per-database YAML file declaring table aliases, geometry columns, SRIDs, geometry types, and rule identifiers. The \emph{intent rules} map classifier tags such as \texttt{spatial\_measurement} or \texttt{knn} to prompt-side rules. The \emph{postprocessor} rejects write nodes, repairs identifier case/quoting, injects \texttt{LIMIT} guards for large-table previews, and runs the retry loop above. Minimal versions of these artefacts, the few-shot top-$k$ setting, and the prompt templates are released in the reviewer-accessible companion repository.
 
 \end{document}

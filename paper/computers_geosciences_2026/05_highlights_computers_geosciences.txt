@@ -1,0 +1,5 @@
+Question-level McNemar tests avoid NL2GeoSQL pseudoreplication.
+Grounding effects differ across Spatial and Robustness subsets.
+Eleven LLM families show heterogeneous PostGIS grounding effects.
+Gemini 3.5 Flash shows a diagnostic negative Spatial tail.
+Frozen traces reproduce tables without LLM calls or database access.

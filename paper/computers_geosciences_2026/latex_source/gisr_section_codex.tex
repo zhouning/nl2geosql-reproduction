@@ -8,11 +8,11 @@
 \subsection{Phenomenon: grounding effects depend on subset and model family}
 \label{sec:gisr:phenomenon}
 
-Schema-aware grounding context is conventionally expected to reduce hallucination and improve schema linking in text-to-SQL pipelines. In PostGIS NL2GeoSQL, however, the same intervention touches several distinct behaviours: spatial predicate selection, geometry measurement, join construction, output-shape control, refusal, and bounded execution. We therefore evaluate grounding by subset rather than by aggregate accuracy alone.
+Schema-aware grounding is expected to reduce hallucination and improve schema linking, but in PostGIS NL2GeoSQL it also affects predicate choice, geometry measurement, joins, output shape, refusal, and bounded execution. We therefore evaluate grounding by subset rather than aggregate accuracy alone.
 
-The primary panel analysis is the 11-family $B-A$ comparison in Table~\ref{tab:gisr:cross-family}. Under question-level majority vote across $N=3$ samples, grounding improves the Robustness subset for all 11 families by point estimate. On the Spatial subset, the effect is heterogeneous: most families improve, but \texttt{gemini-3.5-flash} has the most negative panel estimate ($-10.59$ pp, $p=0.136$) and \texttt{gemini-3.1-pro-preview} is near zero negative ($-2.35$ pp, $p=0.845$). This panel result establishes heterogeneity rather than a significant family-level regression.
+The primary panel is the 11-family $B-A$ comparison in Table~\ref{tab:gisr:cross-family}. Under question-level majority vote across $N=3$ samples, grounding improves Robustness for all 11 families by point estimate. Spatial effects are heterogeneous: most families improve, but \texttt{gemini-3.5-flash} has the most negative panel estimate ($-10.59$ pp, $p=0.136$) and \texttt{gemini-3.1-pro-preview} is near zero negative ($-2.35$ pp, $p=0.845$). This establishes heterogeneity, not a significant family-level regression.
 
-A focused three-condition analysis of \texttt{gemini-3.5-flash}, now balanced at $N=5$ for no-grounding (A), grounding-only (B), and grounding plus minimal-modification (C), gives the same qualitative but more conservative diagnostic signal. Comparing A with B, the 85-question Spatial subset changes by $-10.59$ pp ($b/c=19/10$, exact two-sided McNemar $p=0.136$), while the 40-question Robustness subset changes by $+27.50$ pp ($p=0.0010$). The aggregate change is only $+1.60$ pp ($p=0.875$), which hides the opposite subset directions. We therefore treat the negative Spatial tail as an empirical diagnostic observation rather than a statistically established family-level regression.
+A focused three-condition \texttt{gemini-3.5-flash} analysis, balanced at $N=5$ for no-grounding (A), grounding-only (B), and grounding plus minimal-modification (C), gives the same diagnostic signal. A versus B changes Spatial by $-10.59$ pp ($b/c=19/10$, $p=0.136$) and Robustness by $+27.50$ pp ($p=0.0010$); the aggregate change is only $+1.60$ pp ($p=0.875$). We therefore treat the negative Spatial tail as diagnostic rather than confirmatory.
 
 \paragraph{Statistical convention.} Unless otherwise stated, all paired tests in this section use \textbf{question-level majority vote across the $N$ stochastic samples followed by a single McNemar exact two-sided test} on the resulting per-question table. This avoids the pseudoreplication that would arise from pooling repeated stochastic observations of the same question. The convention is applied uniformly to the three-condition analysis and to the cross-family panel.
 
@@ -72,11 +72,11 @@ Hard (25q) & $-4.00$ pp ($p{=}1.00$) & $+8.00$ pp ($p{=}0.50$) & $+4.00$ pp ($p{
 
 \paragraph{Why de-pooled tests matter here.} A naive pooled test would treat $85$ Spatial questions $\times$ $N{=}5$ samples as $425$ independent paired observations, drastically inflating the effective sample size. Same-question samples are not independent: they share question difficulty, schema-mapping ambiguity, and gold-SQL idiosyncrasies. The honest design is one paired observation per question (the within-sample majority vote), giving $85$ Spatial observations. The price is statistical power; the gain is a defensible $p$-value.
 
-\paragraph{Mixture sensitivity.} The focused \texttt{gemini-3.5-flash} A/B contrast also shows why aggregate EX depends on benchmark composition. Let $w$ be the Spatial share of a mixed benchmark. The expected aggregate grounding effect is
+\paragraph{Mixture sensitivity.} The focused \texttt{gemini-3.5-flash} A/B contrast shows why aggregate EX depends on benchmark composition. Let $w$ be the Spatial share of a mixed benchmark. The expected aggregate grounding effect is
 \[
 \Delta(w) = w(-10.59) + (1-w)(27.50).
 \]
-The effect changes sign at $w \approx 0.722$. CQ-125 has $w=85/125=0.68$, so its aggregate effect is close to zero ($+1.60$ pp) even though the subset effects are opposite-signed. A robustness-heavy benchmark would make grounding look clearly positive, while a more spatial-heavy benchmark could make the same A/B contrast look negative. This analytic sensitivity check does not add new data; it makes the dependence on benchmark composition explicit.
+The effect changes sign at $w \approx 0.722$. CQ-125 has $w=85/125=0.68$, so the aggregate is close to zero despite opposite-signed subset effects. This analytic check adds no data; it makes composition sensitivity explicit.
 
 \subsection{Cross-family evidence: heterogeneous grounding effects across 11 LLMs}
 \label{sec:gisr:cross-family}
@@ -112,11 +112,9 @@ Family & A mean\,\% & B mean\,\% & MV $\Delta$ (pp) & A mean\,\% & B mean\,\% & 
 
 \paragraph{Multiplicity.} The star markers in Table~\ref{tab:gisr:cross-family} are unadjusted per-cell p-values retained to show the panel pattern. Treating the 11 Spatial and 11 Robustness tests as two exploratory comparison sets, Holm correction at $\alpha{=}0.05$ leaves 3 Spatial cells and 9 Robustness cells significant; Benjamini--Hochberg FDR control at $q{=}0.05$ leaves 6 Spatial cells and 9 Robustness cells significant. We therefore read counts of significant family cells descriptively. The confirmatory claim is the subset-conditional heterogeneity pattern under the de-pooled question-level convention, not a corrected discovery claim for every individual family.
 
-\paragraph{What the table establishes and what it does not.} The robust finding is that grounding produces a \emph{heterogeneous} family-conditional effect on the Spatial subset. The point estimates range from $-10.59$ pp (\texttt{gemini-3.5-flash}) to $+23.53$ pp (\texttt{deepseek-v4-flash}); the difference between these tails is $34.12$ pp. The Robustness subset, in contrast, has positive point estimates across all 11 families ($+12.50$ to $+65.00$ pp).
+\paragraph{What the table establishes and what it does not.} Grounding produces a \emph{heterogeneous} family-conditional Spatial effect, ranging from $-10.59$ pp (\texttt{gemini-3.5-flash}) to $+23.53$ pp (\texttt{deepseek-v4-flash}). Robustness point estimates are positive for all 11 families ($+12.50$ to $+65.00$ pp). The table does \emph{not} establish a stable negative property of \texttt{gemini-3.5-flash}: its Spatial estimate is the most negative but non-significant, and the balanced $N=5$ check supports diagnosis rather than confirmation.
 
-The table does \emph{not} establish a stable negative model-family property for \texttt{gemini-3.5-flash}. Its panel Spatial estimate is the most negative in magnitude, but it is not significant at $\alpha{=}0.05$ ($p=0.136$). The balanced $N=5$ three-condition check gives the same Spatial point estimate under the majority-vote convention, so it supports the negative-tail diagnosis without converting it into a confirmatory claim.
-
-\paragraph{Aggregate metrics are insufficient.} The single most important point from Table~\ref{tab:gisr:cross-family} is that aggregate execution accuracy on a benchmark mixing Robustness and Spatial questions is a poor proxy for the underlying interaction. A reader who consulted only an Overall $\Delta$ column could conclude that grounding adds a small positive effect across the panel. The subset decomposition shows that the positive aggregate can be driven by Robustness gains while Spatial gains vary strongly by family. The methodological contribution is therefore that subset decomposition with question-level paired tests is necessary for geospatial NL2SQL benchmarks of this type.
+\paragraph{Aggregate metrics are insufficient.} Aggregate execution accuracy on a mixed Robustness--Spatial benchmark is a poor proxy for the interaction: a small positive Overall $\Delta$ can be driven by Robustness gains while Spatial gains vary by family. Subset decomposition with question-level paired tests is therefore necessary for this benchmark type.
 
 \subsection{Mini-mod profile and its (limited) effect}
 \label{sec:gisr:minimod}
@@ -133,54 +131,47 @@ The mini-mod profile prepends seven \emph{no unsolicited X} rules to the system 
 \item Treat grounding hints as reference, not checklist.
 \end{enumerate}
 
-These rules target the SQL-elaboration patterns that dominate the regression diff between $A$ and $B$ on \texttt{gemini-3.5-flash}: per-record analysis at $N{=}3$ shows nested subquery wrapping (29.7\% of regressions), redundant \texttt{WHERE} (17.2\%), unsolicited \texttt{GROUP BY} (14.1\%), and \texttt{ST\_Union} pre-aggregation (4.7\%) as the largest contributors.
+These rules target the dominant $A$-pass/$B$-fail patterns for \texttt{gemini-3.5-flash}: nested subqueries (29.7\%), redundant \texttt{WHERE} clauses (17.2\%), unsolicited \texttt{GROUP BY} (14.1\%), and \texttt{ST\_Union} pre-aggregation (4.7\%).
 
-\paragraph{Empirical effect under de-pooled statistics.} Per Table~\ref{tab:gisr:deltas}, mini-mod does \emph{not} achieve a statistically significant patch effect at $\alpha{=}0.05$. The point estimate $C - B = +8.24$ pp on Spatial is marginal ($p{=}0.065$), and the total $C - A = -2.35$ pp is not significant ($p{=}0.84$). We therefore characterise mini-mod conservatively: \textbf{a candidate prompt-level partial mitigation, not a validated production technique}. The patch's specificity to \texttt{gemini-3.5-flash} and the fact that no-grounding still outperforms grounding plus mini-mod on Spatial ($A{=}48.2\%$ vs.\ $C{=}45.9\%$) indicate that prompt-level patching is not yet a sufficient abstraction for this family.
+\paragraph{Empirical effect under de-pooled statistics.} Per Table~\ref{tab:gisr:deltas}, mini-mod does \emph{not} reach $\alpha{=}0.05$. Its Spatial $C-B$ point estimate is marginal ($+8.24$ pp, $p{=}0.065$), and $C-A$ remains non-significant ($-2.35$ pp, $p{=}0.84$). We therefore treat mini-mod as \textbf{a candidate prompt-level partial mitigation, not a validated production technique}.
 
 \subsection{Design implication: intent-aware grounding gating as upper-bound analysis}
 \label{sec:gisr:routing}
 
-Table~\ref{tab:gisr:cells} suggests a possible design direction, not a validated production policy. On \texttt{gemini-3.5-flash}, the best observed static choice differs by subset: Robustness-class queries gain large EX from grounding (cells B/C, 92.5\%), while Spatial-class queries have the highest EX under no-grounding (cell A, 48.2\%). If a hypothetical perfect intent classifier could route each question correctly, the resulting upper-bound EX on CQ-125 would be $\frac{40 \cdot 92.5 + 85 \cdot 48.2}{125} \approx 62.4\%$, exceeding any single static policy ($A{=}53.6\%$, $B{=}55.2\%$, $C{=}60.8\%$).
+Table~\ref{tab:gisr:cells} suggests a design direction, not a validated production policy. On \texttt{gemini-3.5-flash}, Robustness queries gain from grounding (B/C, 92.5\%), while Spatial queries perform best under no-grounding (A, 48.2\%). A hypothetical perfect intent classifier would yield an upper-bound EX of $\frac{40 \cdot 92.5 + 85 \cdot 48.2}{125} \approx 62.4\%$, above any single static policy ($A{=}53.6\%$, $B{=}55.2\%$, $C{=}60.8\%$).
 
-\paragraph{What we report and what we do not.} This calculation is an \emph{upper-bound theoretical analysis}. We do not report end-to-end EX under a real classifier in the present manuscript. A complete intent-aware-gating evaluation requires (i) classifier accuracy / precision / recall on CQ-125, (ii) end-to-end EX after classifier errors, and (iii) latency and token-cost overhead from the additional classification step. The intent-router implementation referenced from our companion repository operates over a coarse spatial-vs-robustness label, but its empirical accuracy on CQ-125 has not been validated under the same evaluation harness as the grounding cells. The contribution of this subsection is therefore the upper-bound number and the qualitative implication that subset-conditional grounding is a plausible policy class for this family.
+\paragraph{What we report and what we do not.} This is an \emph{upper-bound theoretical analysis}. We do not report end-to-end EX under a real classifier. A complete gating evaluation must report classifier P/R/F1, EX after misrouting, and latency/token overhead. The contribution here is the upper-bound number and the qualitative implication that subset-conditional grounding is a plausible policy class for this family.
 
 For all other tested families, plain grounding remains the empirically best static policy at $N{=}3$; the gating logic is family-conditional.
 
 \subsection{Methodological lesson}
 \label{sec:gisr:methodology}
 
-We propose a preregistration-ready analysis template for grounding-effect studies on geospatial NL2SQL benchmarks of mixed Spatial--Robustness composition:
+We propose a compact analysis template for mixed Spatial--Robustness grounding studies:
 
 \begin{enumerate}[itemsep=1pt,leftmargin=*]
-\item \textbf{Data manifest first.} Enumerate every $N{\geq}3$ JSONL in the corpus before constructing any analysis table.
-\item Three conditions per family ($A$ no-grounding, $B$ grounding-only, $C$ grounding+patch) at $N{\geq}5$.
-\item Per condition: Overall, Robustness vs.\ Spatial, Easy/Medium/Hard, plus top-$k$ category breakdowns where $n_q{\geq}3$.
-\item \textbf{Per subset, use a question-level paired test.} The honest paired test for repeated stochastic LLM samples is question-level majority vote across $N$ samples followed by a single McNemar exact two-sided test on the per-question table; pooling repeated observations across samples violates independence and inflates significance.
+\item \textbf{Data manifest first.} Enumerate every $N{\geq}3$ JSONL before constructing tables.
+\item Run three conditions per family ($A$ no-grounding, $B$ grounding-only, $C$ grounding+patch) at $N{\geq}5$ where feasible.
+\item Report Overall, Robustness, Spatial, Easy/Medium/Hard, and category breakdowns where $n_q{\geq}3$.
+\item \textbf{Per subset, use a question-level paired test.} Majority-vote repeated samples per question, then run one exact two-sided McNemar test; do not pool repeated samples as independent observations.
 \item Report decomposition $B-A$, $C-B$, $C-A$ separately; any narrative must attribute the gain to one of these.
 \item State the multiplicity policy before counting significant family cells; if correction is exploratory rather than confirmatory, say so explicitly.
-\item Pre-specify at least three competing interpretations of the expected result, including null and negative.
+\item Pre-specify competing interpretations, including null and negative outcomes.
 \end{enumerate}
 
 Every number in Tables~\ref{tab:gisr:cells}--\ref{tab:gisr:cross-family} is regenerable from the released JSONL via the offline analysis scripts shipped in the companion repository.
 
-\subsection{Limitations}
+\subsection{Section-level limitations}
 \label{sec:gisr:limitations}
 
-\begin{enumerate}[itemsep=2pt,leftmargin=*]
-\item \textbf{Finite-sample statistical regime and multiplicity.} The primary cross-family panel remains at $N{=}3$ paired samples per question for comparability across all 11 families, while the focused \texttt{gemini-3.5-flash} A/B/C analysis is balanced at $N{=}5$. The balanced check retains a negative Spatial point estimate but no longer reaches $\alpha{=}0.05$ under question-level majority-vote McNemar testing. The table-level star markers are unadjusted; after Holm correction within the 11-family Spatial comparison set, three positive Spatial cells remain significant, whereas the \texttt{gemini-3.5-flash} negative tail remains non-significant. We report it as a diagnostic negative-tail observation, not an established model-family property.
-\item \textbf{Single benchmark.} CQ-125 is a Chongqing-grounded geospatial benchmark with 85:40 spatial:robustness mixture. Replication on benchmarks of different composition (e.g.\ pure-spatial GeoSQL-Eval, pure-warehouse) is required before claiming the phenomenon generalises.
-\item \textbf{Mini-mod is a candidate patch.} The balanced $N{=}5$ patch effect on Spatial is marginal ($p{=}0.065$); we do not claim it as a validated technique.
-\item \textbf{Intent-aware gating is presented as upper-bound analysis.} A classifier-validated end-to-end EX evaluation is not reported in this manuscript. The upper-bound calculation is not a production-deployable claim.
-\item \textbf{Subset of LLMs surveyed.} The 11-family panel includes only models with API access during the evaluation window. Replication on additional model providers is required before treating the observed distribution of effects as representative of the broader model ecosystem.
-\end{enumerate}
+The empirical section has four boundaries carried into the Discussion: the cross-family panel is $N{=}3$ while only the focused diagnostic is $N{=}5$; CQ-125 is one Chongqing-grounded benchmark with an 85:40 Spatial--Robustness mixture; mini-mod is a candidate patch; and intent-aware gating is reported only as an upper bound, not as classifier-validated end-to-end EX.
 
 \subsection{Reproducibility}
 \label{sec:gisr:reproducibility}
 
 {\sloppy
-All numerical results in this section --- the three-factor decomposition (Tables~\ref{tab:gisr:cells}--\ref{tab:gisr:deltas}) and the cross-family Table~\ref{tab:gisr:cross-family} --- are regenerable offline from frozen evaluation records with zero LLM API calls, zero PostgreSQL dependency, and zero GPU requirement. This supports reproducibility of the statistical reductions from frozen SQL-output and execution-result records; it is not a raw-row re-execution package because the operational database rows are withheld. The reviewer-accessible anonymised reproduction package is available at
-\url{https://anonymous.4open.science/r/nl2geosql-reproduction-36D6/}
-for double-anonymised review. It ships frozen JSONL execution traces, benchmark question metadata, prompt profiles, and offline analysis scripts for all eleven LLM families. Each primary panel run record is keyed by \texttt{(family, sample\_index, mode, qid)} and can be reduced by the question-level majority-vote convention used in this manuscript. The package also releases the schema-level materials needed to audit grounding without exposing sensitive row-level records: a structure-only \texttt{schema.sql} dump, table/column metadata, geometry-column metadata, SRID information, semantic-layer configuration, the minimal-modification prompt profile, and the upper-bound intent-gate decision template. Embeddings used during semantic resolution are precomputed and cached in the JSONL traces, so reviewers do not need to invoke any embedding model. The repository includes a CI-style \texttt{verify\_tables.py} check for one frozen cross-family table; the majority-vote reductions reported here are computed from the same JSONL records under the de-pooled convention stated above.
+All numerical results in this section --- the three-factor decomposition (Tables~\ref{tab:gisr:cells}--\ref{tab:gisr:deltas}) and the cross-family Table~\ref{tab:gisr:cross-family} --- are regenerable offline from frozen evaluation records with zero LLM API calls, zero PostgreSQL dependency, and zero GPU requirement. This supports reproducibility of the statistical reductions from frozen SQL-output and execution-result records; it is not a raw-row re-execution package because the operational database rows are withheld. The reviewer-accessible reproduction package is available at
+\url{https://anonymous.4open.science/r/nl2geosql-reproduction-36D6/}. It ships frozen JSONL execution traces, benchmark question metadata, prompt profiles, and offline analysis scripts for all eleven LLM families. Each primary panel run record is keyed by \texttt{(family, sample\_index, mode, qid)} and can be reduced by the question-level majority-vote convention used in this manuscript. The package also releases the schema-level materials needed to audit grounding without exposing sensitive row-level records: a structure-only \texttt{schema.sql} dump, table/column metadata, geometry-column metadata, SRID information, semantic-layer configuration, the minimal-modification prompt profile, and the upper-bound intent-gate decision template. Embeddings used during semantic resolution are precomputed and cached in the JSONL traces, so reviewers do not need to invoke any embedding model. The repository includes a CI-style \texttt{verify\_tables.py} check for one frozen cross-family table; the majority-vote reductions reported here are computed from the same JSONL records under the de-pooled convention stated above.
 \par}
 
 % =============================================================================
