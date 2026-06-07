@@ -2,7 +2,27 @@
 
 \subsection{Experimental setup}
 
-\noindent\textbf{Evaluation protocols.} The primary analysis in this manuscript is the CQ-125 grounding-effect study in \S\ref{sec:gisr}. It compares two prompt conditions, no-grounding (A) and grounding-only (B), across 11 LLM families using $N{=}3$ paired samples per family and question-level majority-vote McNemar tests. A focused \texttt{gemini-3.5-flash} diagnostic adds a third condition, grounding plus minimal-modification rules (C), again truncated to $N{=}3$ for matched A/B/C comparison.
+\noindent\textbf{Evaluation protocols.} The primary analysis in this manuscript is the CQ-125 grounding-effect study in \S\ref{sec:gisr}. It compares two prompt conditions, no-grounding (A) and grounding-only (B), across 11 LLM families using $N{=}3$ paired samples per family and question-level majority-vote McNemar tests. A focused \texttt{gemini-3.5-flash} diagnostic adds a third condition, grounding plus minimal-modification rules (C), and is run as a balanced A/B/C comparison with $N{=}5$ samples per condition under the same question-level majority-vote convention. Table~\ref{tab:protocol-inventory} separates the inferential panel from supporting framework, deployment, and harness-readiness results.
+
+\begin{table}[t]
+\centering
+\footnotesize
+\caption{Evaluation-protocol inventory. MV denotes question-level majority vote before paired McNemar testing. A is no-grounding, B is grounding-only, and C is grounding plus the minimal-modification prompt profile.}
+\label{tab:protocol-inventory}
+{\setlength{\tabcolsep}{4pt}
+\begin{tabular}{p{0.23\linewidth}p{0.25\linewidth}p{0.20\linewidth}p{0.23\linewidth}}
+\toprule
+Experiment & Dataset / model scope & Conditions and samples & Role in the manuscript \\
+\midrule
+Cross-family grounding panel & CQ-125; 11 LLM families & A/B, $N{=}3$, MV McNemar & Primary evidence for subset-conditional and family-conditional grounding effects. \\
+Focused Gemini 3.5 diagnostic & CQ-125; \texttt{gemini-3.5-flash} & A/B/C, balanced $N{=}5$, MV McNemar & Diagnostic check of the negative Spatial tail and mini-mod candidate patch. \\
+Framework context & GIS, BIRD, cross-lingual, and DIN-SQL tracks & Original paired protocols; BIRD in single-pass mode & Supporting system context, not the primary grounding-effect claim. \\
+Gemma4 fixed-host sweep & CQ-125; five local Gemma4 scales on host228 & Single-host frozen summaries; best-observed full rows where multiple full runs existed & Deployment accuracy--runtime probe only. \\
+FloodSQL-Bench smoke audit & Local PostGIS port; \texttt{gemini-2.5-flash} & Stratified 150q, $N{=}1$ & External harness-readiness audit only. \\
+\bottomrule
+\end{tabular}
+}
+\end{table}
 
 The framework-level results in \S\ref{sec:baseline-results} use a separate evaluation protocol and are reported as supporting context rather than as the primary claim. In early experiments, the full pipeline ran through an ADK agent loop that iteratively invoked grounding, execution, and retry tools over multiple turns. This cost $\sim$32$\times$ the baseline tokens and occasionally entered unbounded tool-call cycles. We therefore also implement a deterministic \emph{single-pass} pipeline: (1)~build the grounding context locally (intent classification, semantic resolution, prompt assembly, no LLM call); (2)~make a single LLM call to generate SQL; (3)~postprocess (safety check, identifier quoting, LIMIT injection) and execute; on failure, retry with a fast corrective LLM call (up to $T=2$). Single-pass mode reduced BIRD token cost from $\sim$32$\times$ to $7.9\times$ and improved design-set EX. BIRD results below use single-pass; the earlier GIS framework headline uses the agent loop and is separated from the cross-family grounding-effect analysis.
 
@@ -21,7 +41,7 @@ For external-benchmark readiness, we also ported FloodSQL-Bench~\citep{liu2025fl
 \input{table_benchmark_profile.tex}
 \end{table}
 
-We use execution accuracy (EX) as the primary metric: a prediction is correct if and only if its result set matches the gold SQL under set-equality with numeric tolerance. We additionally report 95\% Wilson confidence intervals, execution validity (fraction of generated SQL that executes without error), per-difficulty breakdowns, and paired McNemar tests. For repeated stochastic LLM samples in \S\ref{sec:gisr}, the unit of inference is the question: we first take majority vote across the $N=3$ samples for each condition and question, then run one exact two-sided McNemar test on the resulting paired per-question table. We do not pool repeated samples as independent observations.
+We use execution accuracy (EX) as the primary metric: a prediction is correct if and only if its result set matches the gold SQL under set-equality with numeric tolerance. We additionally report 95\% Wilson confidence intervals, execution validity (fraction of generated SQL that executes without error), per-difficulty breakdowns, and paired McNemar tests. For repeated stochastic LLM samples in \S\ref{sec:gisr}, the unit of inference is the question: the cross-family panel uses $N{=}3$ samples per condition, while the focused \texttt{gemini-3.5-flash} A/B/C diagnostic uses balanced $N{=}5$ samples per condition. In both cases, we first take majority vote across the repeated samples for each condition and question, then run one exact two-sided McNemar test on the resulting paired per-question table. We do not pool repeated samples as independent observations.
 
 \paragraph{Execution accuracy evaluator.}
 EX compares the result set of predicted SQL against gold SQL under the

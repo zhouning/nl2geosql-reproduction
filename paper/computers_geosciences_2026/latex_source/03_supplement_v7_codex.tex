@@ -366,6 +366,7 @@ Full pipeline    & $0.975$ ($39/40$) & $28$ & $0$  & $7.45 \times 10^{-9}$ \\
 \toprule
 Experiment & Model & Key parameters \\
 \midrule
+CQ-125 cross-family grounding panel & 11 LLM families & A/B all $N=3$, question-level majority vote followed by one exact two-sided McNemar test per subset; primary main-text analysis \\
 GIS 125q (baseline + full) & Gemini 2.5 Flash & temp=0.0, 60s timeout \\
 GIS 125q (DIN-SQL) & Gemini 2.5 Flash & temp=0.0, 4-stage pipeline \\
 BIRD 108q design + 150q held-out & Gemini 2.5 Flash & temp=0.0, single-pass \\
@@ -387,7 +388,9 @@ BIRD + 50 Chinese GIS), the DIN-SQL runner adapted for PostgreSQL/PostGIS, the
 evaluation harness with McNemar and Wilson CI tools, the balanced N=5
 \texttt{gemini-3.5-flash} A/B/C summary, the six-way ablation runner,
 and the SQL postprocessor and self-correction logic. Per-question predicted SQL
-and execution results are included. Revision source tables additionally include
+and execution results are included as frozen records for offline statistical
+reduction; the package does not support raw-row database re-execution because the
+operational rows are withheld. Revision source tables additionally include
 the fixed-host Gemma4 scale sweep, the queried Ollama model metadata, and the
 FloodSQL-Bench smoke-audit summary.
 

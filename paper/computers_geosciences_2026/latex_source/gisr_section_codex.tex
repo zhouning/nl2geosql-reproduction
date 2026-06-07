@@ -51,8 +51,8 @@ Hard (25q) & $24.0\%$ & $20.0\%$ & $\mathbf{28.0\%}$ \\
 
 \begin{table}[h]
 \centering
-\footnotesize
-\setlength{\tabcolsep}{4.5pt}
+\scriptsize
+\setlength{\tabcolsep}{3.5pt}
 \begin{tabular}{lccc}
 \toprule
 Subset & Grounding ($B - A$) & Mini-mod patch ($C - B$) & Total ($C - A$) \\
@@ -85,13 +85,13 @@ We extend the analysis to ten additional LLMs whose CQ-125 $N{=}3$ baseline-vs-f
 
 \begin{table}[h]
 \centering
-\footnotesize
-\setlength{\tabcolsep}{4.5pt}
+\scriptsize
+\setlength{\tabcolsep}{3.5pt}
 \begin{tabular}{lrrlrrl}
 \toprule
  & \multicolumn{3}{c}{Spatial (85q)} & \multicolumn{3}{c}{Robust (40q)} \\
 \cmidrule(lr){2-4}\cmidrule(lr){5-7}
-Family & A\,\% & B\,\% & $\Delta$ (pp) & A\,\% & B\,\% & $\Delta$ (pp) \\
+Family & A mean\,\% & B mean\,\% & MV $\Delta$ (pp) & A mean\,\% & B mean\,\% & MV $\Delta$ (pp) \\
 \midrule
 \texttt{gemini-2.5-flash} & $54.9$ & $68.6$ & $+12.94$\,$^{*}$ & $40.0$ & $97.5$ & $+57.50$\,$^{**}$ \\
 \texttt{gemini-2.5-pro} & $57.6$ & $72.5$ & $+18.82$\,$^{**}$ & $61.7$ & $91.7$ & $+30.00$\,$^{**}$ \\
@@ -106,9 +106,11 @@ Family & A\,\% & B\,\% & $\Delta$ (pp) & A\,\% & B\,\% & $\Delta$ (pp) \\
 \texttt{gemma-4-31b-it} & $44.7$ & $57.3$ & $+11.76$\,$^{*}$ & $89.2$ & $95.8$ & $+12.50$ (p=0.06) \\
 \bottomrule
 \end{tabular}
-\caption{Cross-family question-level majority-vote $\Delta$ on CQ-125 ($N{=}3$ samples per family). $A$ and $B$ columns report mean execution accuracy across the three samples; $\Delta$ is computed after question-level majority vote as $\text{MV}(B)-\text{MV}(A)$ in percentage points; significance is the paired exact two-sided McNemar test on the per-question majority-vote table. Significance markers: $^{*}p{<}0.05$, $^{**}p{<}0.01$. Bold-italic marks the most negative panel point estimate (\texttt{gemini-3.5-flash}, $p{=}0.136$). Of 11 families, 7 show significant positive Spatial $\Delta$, 2 marginal positive (p between $0.05$ and $0.10$), and 2 non-significant negative. Robustness $\Delta$ is positive for every family, with nine significant, one marginal, and one non-significant positive cell.}
+\caption{Cross-family question-level majority-vote $\Delta$ on CQ-125 ($N{=}3$ samples per family). $A$ and $B$ columns report per-sample mean execution accuracy across the three samples for readability; MV $\Delta$ is computed after question-level majority vote as $\text{MV}(B)-\text{MV}(A)$ in percentage points. Significance is the paired exact two-sided McNemar test on the per-question majority-vote table. Significance markers are unadjusted per-cell values: $^{*}p{<}0.05$, $^{**}p{<}0.01$. Bold-italic marks the most negative panel point estimate (\texttt{gemini-3.5-flash}, $p{=}0.136$). Of 11 families, 7 show unadjusted significant positive Spatial $\Delta$, 2 marginal positive (p between $0.05$ and $0.10$), and 2 non-significant negative. Robustness $\Delta$ is positive for every family, with nine unadjusted significant, one marginal, and one non-significant positive cell.}
 \label{tab:gisr:cross-family}
 \end{table}
+
+\paragraph{Multiplicity.} The star markers in Table~\ref{tab:gisr:cross-family} are unadjusted per-cell p-values retained to show the panel pattern. Treating the 11 Spatial and 11 Robustness tests as two exploratory comparison sets, Holm correction at $\alpha{=}0.05$ leaves 3 Spatial cells and 9 Robustness cells significant; Benjamini--Hochberg FDR control at $q{=}0.05$ leaves 6 Spatial cells and 9 Robustness cells significant. We therefore read counts of significant family cells descriptively. The confirmatory claim is the subset-conditional heterogeneity pattern under the de-pooled question-level convention, not a corrected discovery claim for every individual family.
 
 \paragraph{What the table establishes and what it does not.} The robust finding is that grounding produces a \emph{heterogeneous} family-conditional effect on the Spatial subset. The point estimates range from $-10.59$ pp (\texttt{gemini-3.5-flash}) to $+23.53$ pp (\texttt{deepseek-v4-flash}); the difference between these tails is $34.12$ pp. The Robustness subset, in contrast, has positive point estimates across all 11 families ($+12.50$ to $+65.00$ pp).
 
@@ -155,6 +157,7 @@ We propose a preregistration-ready analysis template for grounding-effect studie
 \item Per condition: Overall, Robustness vs.\ Spatial, Easy/Medium/Hard, plus top-$k$ category breakdowns where $n_q{\geq}3$.
 \item \textbf{Per subset, use a question-level paired test.} The honest paired test for repeated stochastic LLM samples is question-level majority vote across $N$ samples followed by a single McNemar exact two-sided test on the per-question table; pooling repeated observations across samples violates independence and inflates significance.
 \item Report decomposition $B-A$, $C-B$, $C-A$ separately; any narrative must attribute the gain to one of these.
+\item State the multiplicity policy before counting significant family cells; if correction is exploratory rather than confirmatory, say so explicitly.
 \item Pre-specify at least three competing interpretations of the expected result, including null and negative.
 \end{enumerate}
 
@@ -164,7 +167,7 @@ Every number in Tables~\ref{tab:gisr:cells}--\ref{tab:gisr:cross-family} is rege
 \label{sec:gisr:limitations}
 
 \begin{enumerate}[itemsep=2pt,leftmargin=*]
-\item \textbf{Finite-sample statistical regime.} The primary cross-family panel remains at $N{=}3$ paired samples per question for comparability across all 11 families, while the focused \texttt{gemini-3.5-flash} A/B/C analysis is balanced at $N{=}5$. The balanced check retains a negative Spatial point estimate but no longer reaches $\alpha{=}0.05$ under question-level majority-vote McNemar testing. We report it as a diagnostic negative-tail observation, not an established model-family property.
+\item \textbf{Finite-sample statistical regime and multiplicity.} The primary cross-family panel remains at $N{=}3$ paired samples per question for comparability across all 11 families, while the focused \texttt{gemini-3.5-flash} A/B/C analysis is balanced at $N{=}5$. The balanced check retains a negative Spatial point estimate but no longer reaches $\alpha{=}0.05$ under question-level majority-vote McNemar testing. The table-level star markers are unadjusted; after Holm correction within the 11-family Spatial comparison set, three positive Spatial cells remain significant, whereas the \texttt{gemini-3.5-flash} negative tail remains non-significant. We report it as a diagnostic negative-tail observation, not an established model-family property.
 \item \textbf{Single benchmark.} CQ-125 is a Chongqing-grounded geospatial benchmark with 85:40 spatial:robustness mixture. Replication on benchmarks of different composition (e.g.\ pure-spatial GeoSQL-Eval, pure-warehouse) is required before claiming the phenomenon generalises.
 \item \textbf{Mini-mod is a candidate patch.} The balanced $N{=}5$ patch effect on Spatial is marginal ($p{=}0.065$); we do not claim it as a validated technique.
 \item \textbf{Intent-aware gating is presented as upper-bound analysis.} A classifier-validated end-to-end EX evaluation is not reported in this manuscript. The upper-bound calculation is not a production-deployable claim.
@@ -175,9 +178,9 @@ Every number in Tables~\ref{tab:gisr:cells}--\ref{tab:gisr:cross-family} is rege
 \label{sec:gisr:reproducibility}
 
 {\sloppy
-All numerical results in this section --- the three-factor decomposition (Tables~\ref{tab:gisr:cells}--\ref{tab:gisr:deltas}) and the cross-family Table~\ref{tab:gisr:cross-family} --- are regenerable offline from frozen evaluation records with zero LLM API calls, zero PostgreSQL dependency, and zero GPU requirement. The reviewer-accessible anonymised reproduction package is available at
+All numerical results in this section --- the three-factor decomposition (Tables~\ref{tab:gisr:cells}--\ref{tab:gisr:deltas}) and the cross-family Table~\ref{tab:gisr:cross-family} --- are regenerable offline from frozen evaluation records with zero LLM API calls, zero PostgreSQL dependency, and zero GPU requirement. This supports reproducibility of the statistical reductions from frozen SQL-output and execution-result records; it is not a raw-row re-execution package because the operational database rows are withheld. The reviewer-accessible anonymised reproduction package is available at
 \url{https://anonymous.4open.science/r/nl2geosql-reproduction-36D6/}
-for double-anonymised review. It ships pre-computed JSONL execution traces ($\approx 76$ files, $8.5$\,MB) for all eleven LLM families, benchmark question metadata, prompt profiles, and offline analysis scripts. Each primary panel run record is keyed by \texttt{(family, sample\_index, mode, qid)} and can be reduced by the question-level majority-vote convention used in this manuscript. The package also releases the schema-level materials needed to audit grounding without exposing sensitive row-level records: a structure-only \texttt{schema.sql} dump, table/column metadata, geometry-column metadata, SRID information, semantic-layer configuration, the minimal-modification prompt profile, and the upper-bound intent-gate decision template. Embeddings used during semantic resolution are precomputed and cached in the JSONL traces, so reviewers do not need to invoke any embedding model. The repository includes a CI-style \texttt{verify\_tables.py} check for one frozen cross-family table; the majority-vote reductions reported here are computed from the same JSONL records under the de-pooled convention stated above.
+for double-anonymised review. It ships frozen JSONL execution traces, benchmark question metadata, prompt profiles, and offline analysis scripts for all eleven LLM families. Each primary panel run record is keyed by \texttt{(family, sample\_index, mode, qid)} and can be reduced by the question-level majority-vote convention used in this manuscript. The package also releases the schema-level materials needed to audit grounding without exposing sensitive row-level records: a structure-only \texttt{schema.sql} dump, table/column metadata, geometry-column metadata, SRID information, semantic-layer configuration, the minimal-modification prompt profile, and the upper-bound intent-gate decision template. Embeddings used during semantic resolution are precomputed and cached in the JSONL traces, so reviewers do not need to invoke any embedding model. The repository includes a CI-style \texttt{verify\_tables.py} check for one frozen cross-family table; the majority-vote reductions reported here are computed from the same JSONL records under the de-pooled convention stated above.
 \par}
 
 % =============================================================================
