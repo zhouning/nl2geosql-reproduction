@@ -10,8 +10,9 @@ submission package.
 | `01_manuscript_computers_geosciences.pdf` | `01_manuscript_computers_geosciences.tex` plus the input files listed below |
 | `02_supplementary_material.pdf` | `03_supplement_v7_codex.tex` |
 
-The non-anonymous cover letter is intentionally excluded from this reproduction
-repository.
+The non-anonymous cover letter and separate declarations file are intentionally
+excluded from this reproduction repository because they are submission
+correspondence rather than reproducibility artefacts.
 
 ## Main Manuscript Dependencies
 

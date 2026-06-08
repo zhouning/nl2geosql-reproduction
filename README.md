@@ -133,7 +133,7 @@ Will be added on acceptance. For now, please cite the Computers & Geosciences su
 
 ## Review-note
 
-For double-blind review, use the anonymised review snapshot cited in the
+For peer review, use the reviewer-accessible anonymous snapshot cited in the
 manuscript. This GitHub repository is maintained as the permanent reproduction
 repository and may contain non-anonymous manuscript materials after submission.
 
