@@ -215,30 +215,55 @@ manuscript and references, and takes full responsibility for the final content.
 No AI tool is listed as an author.
 
 % =============================================================================
-\section*{Data and Code Availability Statement}
+\section*{Data Availability}
 % =============================================================================
 
 {\sloppy
-A reviewer-accessible reproduction package is available at
+The benchmark questions, schema-level metadata, prompt profiles, frozen
+LLM-output records, and execution-result records needed to audit the
+manuscript's reported reductions are available from the anonymized public
+reproduction repository:
 \url{https://anonymous.4open.science/r/nl2geosql-reproduction-36D6/}.
-The package contains offline analysis scripts, schema manifests, semantic-layer configuration, benchmark question metadata, prompt profiles, and pre-computed SQL-output and execution-result records that support offline regeneration of the primary CQ-125 grounding-effect analyses and the previously released framework-level tables. These checks require no LLM API calls, database access, GPU resources, or access to sensitive raw records. This is reduction-level reproducibility from frozen execution records, not independent raw-row re-execution. The balanced \texttt{gemini-3.5-flash} N=5 A/B/C diagnostic summary, the fixed-host Gemma4 deployment sweep, and the FloodSQL-Bench smoke audit added in this revision are provided as source-table summaries with the manuscript source. The underlying operational database rows are not released because they contain sensitive local data. Instead, we release the schema-level information required for auditability: table/column structure, geometry-column metadata, SRID information, and semantic grounding rules. The repository license file specifies MIT licensing for code and CC-BY 4.0 licensing for benchmark questions and frozen LLM evaluation outputs under \texttt{data/}. After acceptance, the review link will be replaced by a permanent archival repository with the same file layout and explicit license text.
+The released materials support reduction-level reproducibility from frozen
+records. They do not require LLM API calls, database access, GPU resources, or
+access to sensitive raw records. The underlying operational database rows are
+not released because they contain sensitive local data. Instead, the repository
+provides the schema-level information needed for auditability, including
+table/column structure, geometry-column metadata, SRID information, and semantic
+grounding rules. The balanced \texttt{gemini-3.5-flash} N=5 A/B/C diagnostic
+summary, the fixed-host Gemma4 deployment sweep, and the FloodSQL-Bench smoke
+audit added in this revision are provided as source-table summaries with the
+manuscript source and are not used as replacements for the primary statistical
+reductions.
 \par}
 
-\medskip
-\noindent\begin{tabular}{p{0.22\linewidth}p{0.30\linewidth}p{0.36\linewidth}}
-\toprule
-Item & Availability & Reproducibility role \\
-\midrule
-Primary CQ-125 traces & Reviewer-accessible repository & Regenerate the subset-decomposed majority-vote tables and McNemar tests without LLM or database access. \\
-Schema and grounding metadata & Reviewer-accessible repository & Audit table structure, geometry columns, SRID information, and semantic-layer rules without exposing row-level records. \\
-Gemini 3.5 A/B/C diagnostic & Manuscript source CSV & Audit the balanced N=5 majority-vote summary used in the focused three-condition analysis. \\
-Gemma4 deployment probe & Manuscript source CSVs & Audit the descriptive fixed-host scale-sweep summary and Ollama model metadata; not used in primary statistical reductions. \\
-FloodSQL-Bench smoke audit & Manuscript source CSV & Audit external-harness readiness; not used as generalisation evidence. \\
-Software/data license & Repository \texttt{LICENSE} & Code released under MIT; benchmark questions and frozen LLM outputs under CC-BY 4.0. \\
-Operational row data & Withheld & Not released because the database contains sensitive local records. \\
-Permanent archive & After acceptance & Replace the review link with a durable repository and explicit software/data license. \\
-\bottomrule
-\end{tabular}
+% =============================================================================
+\section*{Computer Code Availability}
+% =============================================================================
+
+{\sloppy
+The computer code used to produce the offline reductions reported in this
+manuscript is open-source and freely available for anonymous download from the
+anonymized public reproduction repository:
+\url{https://anonymous.4open.science/r/nl2geosql-reproduction-36D6/}. The
+repository is provided in anonymized form to preserve double-blind peer review;
+after acceptance, the anonymized link will be replaced by a permanent public
+archival repository with the same file layout and explicit license text.
+
+The repository contains individual source files rather than a compressed code
+archive. It includes a \texttt{README} file describing the purpose of the code,
+installation requirements, the repository layout, and step-by-step reproduction
+commands. It also includes quick-test/example checks for the main manuscript
+reductions. In particular, the commands \texttt{python
+tables/build\_codex\_tables.py} and \texttt{python
+tables/verify\_codex\_tables.py} rebuild and verify the question-level
+majority-vote and McNemar-test results used in the revised manuscript. The
+checks run on frozen JSONL execution records and do not require proprietary
+software, LLM API calls, PostgreSQL/PostGIS access, GPU resources, or access to
+the withheld operational row-level database. The repository license file
+specifies MIT licensing for code and CC-BY 4.0 licensing for benchmark
+questions and frozen LLM evaluation outputs under \texttt{data/}.
+\par}
 
 % =============================================================================
 \bibliographystyle{plainnat}

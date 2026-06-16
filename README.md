@@ -16,7 +16,12 @@
 | `tables/build_codex_tables.py` / `tables/verify_codex_tables.py` | Revised manuscript checks: question-level majority vote followed by exact two-sided McNemar tests |
 | `paper/computers_geosciences_2026/` | Current Computers & Geosciences manuscript PDF, supplementary material, LaTeX source package, and source result tables |
 
-## One-command reproduction
+## Quick test / example reproduction
+
+The following commands are the repository's quick-test example for reviewers.
+They rebuild the derived table files from frozen records and verify them against
+the expected manuscript values. The test requires no LLM API, no PostgreSQL or
+PostGIS database, and no GPU.
 
 ```bash
 pip install -r requirements.txt   # ~5 packages, no LLM API, no PostgreSQL
