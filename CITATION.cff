@@ -1,12 +1,12 @@
 cff-version: 1.2.0
-title: "Reproduction package — subset-decomposed grounding effects in NL2GeoSQL on CQ-125"
+title: "Reproduction package for subset-decomposed grounding effects in NL2GeoSQL on CQ-125"
 message: "If you use this dataset or code, please cite the Computers & Geosciences paper (DOI to be added on acceptance)."
 type: software
 authors:
-  - given-names: "Anonymous"
-    family-names: "Author"
+  - given-names: "Ning"
+    family-names: "Zhou"
 license: MIT
-url: "https://github.com/<anonymized>/nl2geosql-reproduction"
+url: "https://github.com/zhouning/nl2geosql-reproduction"
 keywords:
   - NL2SQL
   - PostGIS

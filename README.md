@@ -136,11 +136,13 @@ Data and benchmark: CC-BY 4.0.
 Will be added on acceptance. For now, please cite the Computers & Geosciences submission DOI
 (in the abstract metadata of the submission system).
 
-## Review-note
+## Repository status
 
-For peer review, use the reviewer-accessible anonymous snapshot cited in the
-manuscript. This GitHub repository is maintained as the permanent reproduction
-repository and may contain non-anonymous manuscript materials after submission.
+This public GitHub repository is the reproduction repository cited in the
+Computers & Geosciences manuscript. It is intended for public download and
+inspection without credentials, and it contains the source files, README,
+quick-test commands, and license information required by the journal's
+Computer Code Availability policy.
 
 > **Note on LLM-hallucinated absolute paths.** A small number of `pred_sql`
 > fields in `data/results/` contain LLM-generated absolute filesystem paths

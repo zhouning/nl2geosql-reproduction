@@ -3,6 +3,9 @@
 This directory contains the manuscript materials corresponding to the current
 Computers & Geosciences submission.
 
+The public reproduction repository cited by the manuscript is:
+https://github.com/zhouning/nl2geosql-reproduction
+
 ## Contents
 
 - `01_manuscript_computers_geosciences.pdf` — main manuscript.
