@@ -1,7 +1,0 @@
-model,host,ollama_version,modified_at,size_bytes,digest,format,family,parameter_size,quantization_level,context_length,embedding_length,capabilities,role
-Gemma4:e2b,host228,0.30.5,2026-06-05T20:43:55.235623011+08:00,7162405886,7fbdbf8f5e45a75bb122155ed546e765b4d9c53a1285f62fd9f506baa1c5a47e,gguf,gemma4,5.1B,Q4_K_M,,,completion;tools;thinking,llm
-Gemma4:e4b,host228,0.30.5,2026-06-05T13:56:39.127189172+08:00,9608350718,c6eb396dbd5992bbe3f5cdb947e8bbc0ee413d7c17e2beaae69f5d569cf982eb,gguf,gemma4,8.0B,Q4_K_M,,,completion;tools;thinking,llm
-Gemma4:12b,host228,0.30.5,2026-06-05T11:04:41.461509486+08:00,7556508396,4eb23ef187e2c5462566d6a1d3bbbc2f1346d0b4327cbb66d58fffbcc9b2b05c,gguf,gemma4,11.9B,Q4_K_M,262144,3840,completion;tools;thinking;vision,llm
-Gemma4:26b,host228,0.30.5,2026-05-31T11:22:22.645168033+08:00,17987581282,2bf53d3fd4c74f461090204bd0885969e86d631fdf76d7f6bc67bfbc4139313b,gguf,gemma4,25.8B,Q4_K_M,,,completion;tools;thinking,llm
-Gemma4:31b,host228,0.30.5,2026-06-03T18:11:41.025040113+08:00,19868981791,6316f0629137b426c9d9b853ffc4c8209589f30ee39aebede6285096c0ff47e7,gguf,gemma4,31.3B,Q4_K_M,,,completion;tools;thinking,llm
-nomic-embed-text-v2-moe:latest,host228,0.30.5,2026-05-31T11:16:23.204494295+08:00,957680763,ff9c2f10ef5e3722623a1b396e1e04efc27a93112c83e9b7b7b9ca1d05620965,gguf,nomic-bert-moe,475.29M,F16,512,768,embedding,embedding

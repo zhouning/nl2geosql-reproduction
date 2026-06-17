@@ -1,12 +1,13 @@
 # Reproduction guide
 
-This document walks through reproducing the Computers & Geosciences submission analyses. The
-total runtime on a 2020-era laptop is **under 90 seconds**; no GPU, no
-PostgreSQL, no LLM API key, and no network access is required.
+This document walks through reproducing the manuscript analyses. The total
+runtime on a 2020-era laptop is under 90 seconds; no GPU, PostgreSQL database,
+LLM API key, or network access is required after dependencies are installed.
 
 ## Environment
 
 Python 3.10 or newer. Tested on:
+
 * Python 3.13 / Windows 11
 * Python 3.11 / Ubuntu 22.04 (CI)
 
@@ -16,44 +17,43 @@ python -m venv .venv
 pip install -r requirements.txt
 ```
 
-The dependency list is intentionally minimal. All
-statistical machinery — paired t-tests, McNemar exact two-sided, Wilson 95% CIs
-— is implemented in `code/eval/post_analysis.py` so that no SciPy/StatsModels
-version-pinning concerns leak into the reviewer's environment.
+The dependency list is intentionally minimal. The main statistical machinery
+used by the analysis scripts is implemented locally so that SciPy/StatsModels
+version-pinning concerns do not leak into the reviewer's environment.
 
 ## End-to-end smoke test
 
 ```bash
-python tables/build_tables.py       # ~2 s
-python tables/verify_tables.py      # ~0.5 s, exits 0 if everything matches
+python tables/build_tables.py
+python tables/verify_tables.py
 python tables/build_codex_tables.py
 python tables/verify_codex_tables.py
 ```
 
 If `verify_tables.py` exits 0, the legacy per-sample cross-family absolute-EX
-table is reproduced bit-exact (to 0.01 pp) from the frozen JSONL. If
-`verify_codex_tables.py` exits 0, the revised manuscript's majority-vote
-headline checks match the current Computers & Geosciences submission.
+table is reproduced bit-exact to 0.01 pp from the frozen JSONL records. If
+`verify_codex_tables.py` exits 0, the current manuscript's majority-vote
+headline checks match the expected values committed in this repository.
 
 ## Reproducing each table
 
-### Revised manuscript — question-level majority-vote headline checks
+### Current manuscript: question-level majority-vote headline checks
 
 ```bash
 python tables/build_codex_tables.py
 python tables/verify_codex_tables.py
 ```
 
-This is the authoritative check for the revised Computers & Geosciences
-submission. It uses `N=3` for the 11-family cross-family panel and balanced
-`N=5` for the focused `gemini-3.5-flash` A/B/C diagnostic. Both analyses compute
-a majority-vote execution outcome per question and then use one exact two-sided
-McNemar test on the per-question table. The verifier checks the current headline
-values, including the `gemini-3.5-flash` Spatial panel `Δ=-10.59 pp, p=0.136`,
-focused Spatial `B-A=-10.59 pp, b/c=19/10, p=0.136`, focused Robustness
-`B-A=+27.50 pp, p=0.0010`, and mini-mod Spatial `C-B=+8.24 pp, p=0.0654`.
+This is the authoritative check for the manuscript. It uses `N=3` for the
+11-family cross-family panel and balanced `N=5` for the focused
+`gemini-3.5-flash` A/B/C diagnostic. Both analyses compute a majority-vote
+execution outcome per question and then use one exact two-sided McNemar test on
+the per-question table. The verifier checks the headline values, including the
+`gemini-3.5-flash` Spatial panel `delta=-10.59 pp, p=0.136`, focused Spatial
+`B-A=-10.59 pp, b/c=19/10, p=0.136`, focused Robustness `B-A=+27.50 pp,
+p=0.0010`, and mini-mod Spatial `C-B=+8.24 pp, p=0.0654`.
 
-### Legacy Table 4 — cross-family absolute EX (11 families × 2 subsets)
+### Legacy Table 4: cross-family absolute EX
 
 ```bash
 python code/eval/cross_family_absolute_ex.py
@@ -67,7 +67,7 @@ python code/eval/cross_family_absolute_ex.py | \
   awk '/# TeX-ready/,0'
 ```
 
-### Legacy paired Δ across families with pooled/per-sample McNemar exact two-sided p
+### Legacy paired delta across families
 
 ```bash
 python code/eval/cross_family_grounding_effect.py
@@ -75,18 +75,21 @@ python code/eval/cross_family_grounding_effect.py
 
 The output covers every subset (Overall, Robust, Spatial, Easy, Medium, Hard)
 for every family under an earlier pooled/per-sample convention. It is kept as a
-diagnostic, not as the revised manuscript's primary inferential convention.
+diagnostic, not as the manuscript's primary inferential convention.
 
-### Diagnostic three-factor decomposition (gemini-3.5-flash only)
+### Diagnostic three-factor decomposition
 
 ```bash
 python code/eval/three_factor_analysis.py
 ```
 
-Cells A (no grounding), B (grounding only), and C (grounding + mini-mod) are now
-all available at `N=5`. Use `tables/build_codex_tables.py` for the current
-question-level majority-vote convention used in the manuscript.
+Cells A (no grounding), B (grounding only), and C (grounding + mini-mod) are all
+available at `N=5` for `gemini-3.5-flash`. Use
+`tables/build_codex_tables.py` for the current question-level majority-vote
+convention used in the manuscript.
+
 Output includes:
+
 * Per-cell EX on Overall / Robustness / Spatial / Easy / Medium / Hard
 * Top-category breakdown
 * Paired t-test 95% CI and McNemar exact two-sided p for B-A, C-B, C-A
@@ -106,7 +109,8 @@ Valid `<family-name>` values:
 `gemini-3.1-pro-preview`, `deepseek-v4-flash`, `deepseek-v4-pro`,
 `qwen3.6-flash`, `qwen3.6-plus`, `gemma-4-31b-it-ollama`.
 
-For `gemini-3.5-flash` (different run directory):
+For `gemini-3.5-flash`:
+
 ```bash
 python code/eval/post_analysis.py \
   --run-dir data/results/v7_gemini35_recheck_n3_2026-05-22_095253 \
@@ -114,6 +118,7 @@ python code/eval/post_analysis.py \
 ```
 
 For `qwen3.7-max`:
+
 ```bash
 python code/eval/post_analysis.py \
   --run-dir data/results/v7_qwen37max_n3_2026-05-22_095715 \
@@ -131,10 +136,10 @@ is a JSON object with these fields:
 | `category` | str | One of: Attribute Filtering, Spatial Join, KNN, Cross-Table, ... |
 | `difficulty` | str | `Easy`, `Medium`, `Hard`, or `Robustness` |
 | `is_robust` | bool | True iff `difficulty == "Robustness"` |
-| `question` | str | Natural-language question (Chinese) |
+| `question` | str | Natural-language question in Chinese |
 | `gold_sql` | str | Ground-truth SQL |
 | `pred_sql` | str | LLM-generated SQL |
-| `ex` | int | 1 if `pred_sql` execution-equivalent to `gold_sql`, else 0 |
+| `ex` | int | 1 if `pred_sql` is execution-equivalent to `gold_sql`, else 0 |
 | `valid` | int | 1 if `pred_sql` is syntactically valid PostgreSQL, else 0 |
 | `reason` | str | Free-form failure reason if `ex == 0` |
 | `tokens` | int | Total tokens spent generating `pred_sql` |
@@ -143,33 +148,33 @@ is a JSON object with these fields:
 | `hint_injection_stats` | dict | Diagnostic counters for the grounding pipeline |
 
 The `mode` axis (`baseline` vs `full`) is encoded in the filename. `baseline`
-runs the LLM with question only (no schema-aware grounding context); `full`
-runs it with the complete grounding pipeline output as system context.
+runs the LLM with question only; `full` runs it with the complete grounding
+pipeline output as system context.
 
 ## Data manifest
 
-```
+```text
 data/results/v7_d1d6_full_n3_2026-05-15_193934/
-   ├── deepseek-v4-flash/sample_{1,2,3}/records_{baseline,full}.jsonl
-   ├── deepseek-v4-pro/...
-   ├── gemini-2.5-flash/...
-   ├── gemini-2.5-pro/...
-   ├── gemini-3.1-flash-lite-preview/...
-   ├── gemini-3.1-pro-preview/...
-   ├── gemma-4-31b-it-ollama/...
-   ├── qwen3.6-flash/...
-   └── qwen3.6-plus/...
+   |-- deepseek-v4-flash/sample_{1,2,3}/records_{baseline,full}.jsonl
+   |-- deepseek-v4-pro/...
+   |-- gemini-2.5-flash/...
+   |-- gemini-2.5-pro/...
+   |-- gemini-3.1-flash-lite-preview/...
+   |-- gemini-3.1-pro-preview/...
+   |-- gemma-4-31b-it-ollama/...
+   |-- qwen3.6-flash/...
+   |-- qwen3.6-plus/...
 
 data/results/v7_qwen37max_n3_2026-05-22_095715/
-   └── qwen3.7-max/sample_{1,2,3}/records_{baseline,full}.jsonl
+   |-- qwen3.7-max/sample_{1,2,3}/records_{baseline,full}.jsonl
 
 data/results/v7_gemini35_recheck_n3_2026-05-22_095253/
-   └── gemini-3.5-flash/sample_{1,2,3}/records_{baseline,full}.jsonl
-   └── gemini-3.5-flash/sample_{4,5}/records_full.jsonl
+   |-- gemini-3.5-flash/sample_{1,2,3}/records_{baseline,full}.jsonl
+   |-- gemini-3.5-flash/sample_{4,5}/records_full.jsonl
        (source for focused cell B, grounding only, N=5)
 
 data/results/v7_gemini35_minimod_n3_20260524/
-   └── gemini-3.5-flash/sample_{1..5}/records_{baseline,full}.jsonl
+   |-- gemini-3.5-flash/sample_{1..5}/records_{baseline,full}.jsonl
        (source for focused cell A and cell C, N=5)
 ```
 
@@ -178,12 +183,11 @@ the focused `gemini-3.5-flash` A/B/C diagnostic is balanced at `N=5`.
 
 ## Troubleshooting
 
-* **`UnicodeEncodeError: 'gbk' codec ...`** on Windows — the scripts call
-  `sys.stdout.reconfigure(encoding='utf-8')` at startup, but if you're using
-  a very old Python (< 3.7) this won't work. Upgrade to Python 3.10+.
-* **`ModuleNotFoundError: failure_classifier`** — the eval scripts add their
-  own directory to `sys.path` at import time. If you've moved them, edit the
+* **`UnicodeEncodeError: 'gbk' codec ...`** on Windows: the scripts call
+  `sys.stdout.reconfigure(encoding='utf-8')` at startup, but if you are using a
+  very old Python (< 3.7), upgrade to Python 3.10+.
+* **`ModuleNotFoundError: failure_classifier`**: the eval scripts add their own
+  directory to `sys.path` at import time. If you have moved them, edit the
   `sys.path.insert(...)` line near the top.
-* **`tables/verify_tables.py` reports drift** — please file an issue. The
-  expected values are committed to the repository at submission time and are
-  intended to be bit-exact.
+* **`tables/verify_tables.py` reports drift**: file an issue. The expected
+  values are committed to the repository and are intended to be bit-exact.

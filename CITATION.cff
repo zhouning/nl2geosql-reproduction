@@ -1,6 +1,6 @@
 cff-version: 1.2.0
 title: "Reproduction package for subset-decomposed grounding effects in NL2GeoSQL on CQ-125"
-message: "If you use this dataset or code, please cite the Computers & Geosciences paper (DOI to be added on acceptance)."
+message: "If you use this dataset or code, please cite the associated manuscript and this repository. A manuscript DOI will be added when available."
 type: software
 authors:
   - given-names: "Ning"
